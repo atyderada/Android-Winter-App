@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.HashMap;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -83,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    HashMap<String, Folder> mAllLists;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +96,11 @@ public class MainActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
+        // Crreating map for all folders
+        mAllLists = new HashMap<>();
+        mAllLists.put("Notes", new Folder("Notes"));
+        mAllLists.put("Reminders", new Folder("Reminders"));
+        mAllLists.put("Alarms", new Folder("Alarms"));
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
