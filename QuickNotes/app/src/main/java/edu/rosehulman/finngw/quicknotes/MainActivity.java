@@ -1,12 +1,14 @@
 package edu.rosehulman.finngw.quicknotes;
 
 import android.annotation.SuppressLint;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ListView;
 
 import java.util.HashMap;
 
@@ -87,6 +89,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    HashMap<String, Folder> mAllLists;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +120,11 @@ public class MainActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+
     }
 
     @Override
