@@ -21,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private static final boolean AUTO_HIDE = true;
 
+    public HashMap<String, Folder> mAllLists;
+
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
@@ -85,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    HashMap<String, Folder> mAllLists;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
