@@ -9,102 +9,107 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <Button
-        android:id="@+id/menu_button"
-        android:layout_width="35dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginLeft="20dp"
-        android:background="@android:color/transparent"
-        android:drawableTop="@drawable/menu_button" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="200sp"
-        android:layout_height="25sp"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="108dp"
-        android:src="@drawable/quicknotes_logo"/>
-
-    <TextView
+    <LinearLayout
         android:id="@+id/fullscreen_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"
-        android:textColor="#33b5e5"
-        android:textSize="50sp"
-        android:textStyle="bold" />
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="65dp"
-        android:inputType="text"
-        android:hint="Title"
-        android:text=""
-        android:textSize="20sp"
-        android:ems="10"
-        android:id="@+id/title_input" />
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="100dp"
-        android:inputType="text"
-        android:hint="Description"
-        android:text=""
-        android:textSize="16sp"
-        android:ems="10"
-        android:id="@+id/description_input" />
+        android:orientation="vertical">
 
-    <android.support.v7.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="135dp"
-        android:paddingTop="10dp"
-        >
-
-        <ImageButton
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/alarm_button"
-            android:id="@+id/alarm_button"
-            android:background="@android:color/transparent"
-            android:paddingLeft="10dp"/>
+            android:orientation="horizontal">
 
-        <ImageButton
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/burger_button"
+                android:layout_width="35dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="36dp"
+                android:layout_marginLeft="20dp"
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/menu_button" />
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="200sp"
+                android:layout_height="25sp"
+                android:layout_marginTop="32dp"
+                android:layout_marginLeft="55dp"
+                android:src="@drawable/quicknotes_logo"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/notes_button"
-            android:id="@+id/note_button"
-            android:background="@android:color/transparent"
-            android:paddingLeft="10dp"/>
+            android:orientation="vertical">
 
-        <ImageButton
-            android:layout_width="wrap_content"
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:inputType="text"
+                android:hint="Title"
+                android:text=""
+                android:textSize="20sp"
+                android:ems="10"
+                android:id="@+id/title_input" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="5dp"
+                android:inputType="text"
+                android:hint="Description"
+                android:text=""
+                android:textSize="16sp"
+                android:ems="10"
+                android:id="@+id/description_input" />
+        </LinearLayout>
+
+        <android.support.v7.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/reminder_button"
-            android:id="@+id/reminder_button"
-            android:background="@android:color/transparent"
-            android:paddingLeft="10dp"/>
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
 
-    </android.support.v7.widget.LinearLayoutCompat>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/alarm_button"
+                android:id="@+id/alarm_button"
+                android:background="@android:color/transparent"
+                android:paddingLeft="35dp"/>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/line"
-        android:layout_marginTop="210dp"
-        android:id="@+id/horizontal_line" />
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/notes_button"
+                android:id="@+id/note_button"
+                android:background="@android:color/transparent"
+                android:paddingLeft="10dp"/>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/horizontal_line"
-        android:layout_alignParentStart="true">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/reminder_button"
+                android:id="@+id/reminder_button"
+                android:background="@android:color/transparent"
+                android:paddingLeft="10dp"/>
+        </android.support.v7.widget.LinearLayoutCompat>
 
-    </FrameLayout>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/line"
+            android:layout_marginTop="10dp"
+            android:id="@+id/horizontal_line" />
 
+        <include layout="@layout/card_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

@@ -1,14 +1,12 @@
 package edu.rosehulman.finngw.quicknotes;
 
-import android.annotation.SuppressLint;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.MotionEvent;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
-import android.widget.ListView;
+import android.widget.ImageButton;
 
 import java.util.HashMap;
 
@@ -17,81 +15,14 @@ import java.util.HashMap;
  * status bar and navigation/system bar) with user interaction.
  */
 public class MainActivity extends AppCompatActivity {
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
 
-    public HashMap<String, Folder> mAllLists;
-
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
-
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
-    private static final int UI_ANIMATION_DELAY = 300;
-    private final Handler mHideHandler = new Handler();
     private View mContentView;
-    private final Runnable mHidePart2Runnable = new Runnable() {
-        @SuppressLint("InlinedApi")
-        @Override
-        public void run() {
-            // Delayed removal of status and navigation bar
 
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
-            mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        }
-    };
-    private View mControlsView;
-    private final Runnable mShowPart2Runnable = new Runnable() {
-        @Override
-        public void run() {
-            // Delayed display of UI elements
-            ActionBar actionBar = getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-            mControlsView.setVisibility(View.VISIBLE);
-        }
-    };
-    private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };
+    private HashMap<String, Folder> mAllLists;
 
-    HashMap<String, Folder> mAllLists;
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,84 +30,81 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
-
         // Crreating map for all folders
         mAllLists = new HashMap<>();
         mAllLists.put("Notes", new Folder("Notes"));
         mAllLists.put("Reminders", new Folder("Reminders"));
         mAllLists.put("Alarms", new Folder("Alarms"));
 
-        // Set up the user interaction to manually show or hide the system UI.
-        mContentView.setOnClickListener(new View.OnClickListener() {
+        for(int i = 1; i < 10; i++) {
+            Card nCard = new Note("Title Sample", "Note " + i);
+            mAllLists.get("Notes").addCard(nCard);
+        }
+
+        for(Card c : mAllLists.get("Notes").list) {
+            Log.d("TTT", c.description);
+        }
+
+        for(int i = 1; i < 10; i++) {
+            Card rCard = new Reminder("Title Sample 2", ("Reminder " + i), 1, 24, 17);
+            mAllLists.get("Reminders").addCard(rCard);
+        }
+
+        for(Card c : mAllLists.get("Reminders").list) {
+            Log.d("TTT", c.description);
+        }
+
+        for(int i = 1; i < 10; i++) {
+            Card aCard = new Alarm("Title Sample Three", "Alarm " + i, 8, 15);
+            mAllLists.get("Alarms").addCard(aCard);
+        }
+
+        for(Card c : mAllLists.get("Alarms").list) {
+            Log.d("TTT", c.description);
+        }
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new CardListAdapter(mAllLists.get("Notes").list, null);
+        mRecyclerView.setAdapter(mAdapter);
+
+        mContentView = findViewById(R.id.fullscreen_content);
+
+        ImageButton mAlarmImgeView = (ImageButton) findViewById(R.id.alarm_button);
+        mAlarmImgeView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                toggle();
+            public void onClick(View v) {
+                mAdapter = new CardListAdapter(mAllLists.get("Alarms").list, null);
+                mRecyclerView.setAdapter(mAdapter);
+                Log.d("TTT", "Clicked");
             }
         });
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
+        ImageButton mReminderImageView = (ImageButton) findViewById(R.id.reminder_button);
+        mReminderImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter = new CardListAdapter(mAllLists.get("Reminders").list, null);
+                mRecyclerView.setAdapter(mAdapter);
+                Log.d("TTT", "Clicked");
+            }
+        });
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-
+        ImageButton mNoteImageView = (ImageButton) findViewById(R.id.note_button);
+        mNoteImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter = new CardListAdapter(mAllLists.get("Notes").list, null);
+                mRecyclerView.setAdapter(mAdapter);
+                Log.d("TTT", "Clicked");
+            }
+        });
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(100);
-    }
-
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
-    }
-
-    private void hide() {
-        // Hide UI first
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-        mControlsView.setVisibility(View.GONE);
-        mVisible = false;
-
-        // Schedule a runnable to remove the status and navigation bar after a delay
-        mHideHandler.removeCallbacks(mShowPart2Runnable);
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
-
-        // Schedule a runnable to display UI elements after a delay
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    /**
-     * Schedules a call to hide() in [delay] milliseconds, canceling any
-     * previously scheduled calls.
-     */
-    private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 }

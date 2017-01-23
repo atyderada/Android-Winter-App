@@ -7,10 +7,12 @@ package edu.rosehulman.finngw.quicknotes;
 public class Reminder extends Card {
     public Date date;
 
-    public Reminder(int d, int m, int y) {
-        date.day = d;
-        date.month = m;
-        date.year = y;
+    public Reminder() {
+    }
+
+    public Reminder(String t, String de, int d, int m, int y) {
+        super(t, de);
+        date = new Date(m, d, y);
     }
 
     public void setDate(int d, int m, int y) {

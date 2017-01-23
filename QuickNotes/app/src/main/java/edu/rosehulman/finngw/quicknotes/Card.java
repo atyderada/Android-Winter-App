@@ -12,6 +12,11 @@ public abstract class Card {
     public Card() {
     }
 
+    public Card(String t, String d) {
+        title = t;
+        description = d;
+    }
+
     public String getDescription() {
         return description;
     }

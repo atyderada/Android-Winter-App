@@ -19,4 +19,8 @@ public class Folder {
     public void changeName(String n) {
         name = n;
     }
+
+    public void addCard(Card c) {
+        list.add(c);
+    }
 }
