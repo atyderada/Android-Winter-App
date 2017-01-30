@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.setNavigationItemSelectedListener(this);
 
         // Crreating map for all folders
@@ -169,11 +170,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_notes) {
-            // Handle the camera action
+            mAdapter = new CardListAdapter(mAllLists.get("Notes").list, null);
+            mRecyclerView.setAdapter(mAdapter);
+            Log.d("TTT", "Clicked");
         } else if (id == R.id.nav_alarms) {
-
+            mAdapter = new CardListAdapter(mAllLists.get("Alarms").list, null);
+            mRecyclerView.setAdapter(mAdapter);
+            Log.d("TTT", "Clicked");
         } else if (id == R.id.nav_reminders) {
-
+            mAdapter = new CardListAdapter(mAllLists.get("Reminders").list, null);
+            mRecyclerView.setAdapter(mAdapter);
+            Log.d("TTT", "Clicked");
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
