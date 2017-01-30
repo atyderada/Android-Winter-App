@@ -22,7 +22,7 @@
             <ImageView
                 android:id="@+id/logo"
                 android:layout_width="200sp"
-                android:layout_height="25sp"
+                android:layout_height="30sp"
                 android:layout_gravity="center"
                 android:src="@drawable/quicknotes_logo"/>
 
