@@ -20,7 +20,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
+            android:paddingLeft="5dp"
             android:paddingTop="5dp"
             android:orientation="vertical">
 
@@ -50,15 +50,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center">
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/alarm_button"
                 android:id="@+id/alarm_button"
-                android:background="@android:color/transparent"
-                android:paddingLeft="16dp"/>
+                android:background="@android:color/transparent"/>
 
             <ImageButton
                 android:layout_width="wrap_content"

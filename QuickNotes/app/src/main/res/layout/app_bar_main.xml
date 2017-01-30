@@ -21,6 +21,7 @@
 
             <ImageView
                 android:id="@+id/logo"
+                android:paddingTop="5dp"
                 android:layout_width="200sp"
                 android:layout_height="30sp"
                 android:layout_gravity="center"
