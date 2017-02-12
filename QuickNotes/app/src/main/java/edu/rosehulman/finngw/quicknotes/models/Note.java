@@ -1,4 +1,4 @@
-package edu.rosehulman.finngw.quicknotes;
+package edu.rosehulman.finngw.quicknotes.models;
 
 /**
  * Created by deradaam on 1/19/2017.
@@ -6,12 +6,10 @@ package edu.rosehulman.finngw.quicknotes;
 
 public class Note extends Card {
 
-    public String title;
-    public String description;
+    private String title;
+    private String description;
 
-    public Note() {
-        super();
-    }
+    public Note() {}
 
     public Note(String t, String d) {
         super(t, d);

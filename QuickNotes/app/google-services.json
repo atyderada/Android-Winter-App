@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "346526209815",
+    "firebase_url": "https://quick-notes-a857e.firebaseio.com",
+    "project_id": "quick-notes-a857e",
+    "storage_bucket": "quick-notes-a857e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346526209815:android:56e212e882ff8729",
+        "android_client_info": {
+          "package_name": "edu.rosehulman.finngw.quicknotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346526209815-9n8ir12tjf6cou87dd45qu15q1t6ss02.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9jFPMjCFrcs7I8HkKJZ0ym5jLjhYL-Vg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346526209815-9n8ir12tjf6cou87dd45qu15q1t6ss02.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "346526209815-pa9c8v1td2d84cjp23p5d5p0urgn8f41.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.GeorgeFinnApps.Quick-Notes"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,4 @@
-package edu.rosehulman.finngw.quicknotes;
+package edu.rosehulman.finngw.quicknotes.models;
 
 import java.util.ArrayList;
 

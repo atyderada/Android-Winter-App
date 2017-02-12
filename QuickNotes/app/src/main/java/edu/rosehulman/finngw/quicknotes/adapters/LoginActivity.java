@@ -1,4 +1,4 @@
-package edu.rosehulman.finngw.quicknotes;
+package edu.rosehulman.finngw.quicknotes.adapters;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -24,6 +24,8 @@ import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.rosehulman.finngw.quicknotes.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

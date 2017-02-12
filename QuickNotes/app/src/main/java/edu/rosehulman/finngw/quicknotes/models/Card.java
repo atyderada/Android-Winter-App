@@ -1,4 +1,6 @@
-package edu.rosehulman.finngw.quicknotes;
+package edu.rosehulman.finngw.quicknotes.models;
+
+import com.google.firebase.database.Exclude;
 
 /**
  * Created by deradaam on 1/19/2017.
@@ -6,16 +8,27 @@ package edu.rosehulman.finngw.quicknotes;
 
 public abstract class Card {
 
-    public String title;
-    public String description;
+    private String key;
+    private String uid;
 
-    public Card() {
-    }
+    private String title;
+    private String description;
+
+    public Card() {}
 
     public Card(String t, String d) {
         title = t;
         description = d;
     }
+
+    @Exclude
+    public String getKey() {return key;}
+
+    public void setKey(String key) {this.key = key;}
+
+    public String getUid() {return uid;}
+
+    public void setUid(String uid) {this.uid = uid;}
 
     public String getDescription() {
         return description;
