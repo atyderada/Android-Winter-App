@@ -3,7 +3,7 @@ package edu.rosehulman.finngw.quicknotes.activities;
 /*
 public class GradeRecorderActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
-        LoginFragment.OnLoginListener,
+        BaseFragment.OnLoginListener,
         AssignmentListFragment.OnAssignmentSelectedListener,
         CourseListFragment.OnCourseSelectedListener,
         OwnerListFragment.OnThisOwnerRemovedListener {
@@ -75,7 +75,7 @@ public class GradeRecorderActivity extends AppCompatActivity implements
                 Log.d(Constants.TAG, "Current user: " + user);
                 if (user == null) {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.container, new LoginFragment(), "login");
+                    ft.replace(R.id.container, new BaseFragment(), "login");
                     ft.commit();
                 } else {
                     SharedPreferencesUtils.setCurrentUser(GradeRecorderActivity.this, user.getUid());
@@ -119,7 +119,7 @@ public class GradeRecorderActivity extends AppCompatActivity implements
     }
 
     private void showLoginError(String message) {
-        LoginFragment loginFragment = (LoginFragment) getSupportFragmentManager().findFragmentByTag("login");
+        BaseFragment loginFragment = (BaseFragment) getSupportFragmentManager().findFragmentByTag("login");
         loginFragment.onLoginError(message);
     }
 
@@ -209,7 +209,7 @@ public class GradeRecorderActivity extends AppCompatActivity implements
         // TODO: May be useful if I implement return to the chosen fragment after choosing a course.
         if (id == R.id.nav_sign_out) {
             Utils.signOut(this);
-            switchTo = new LoginFragment();
+            switchTo = new BaseFragment();
             tag = "login";
         } else if (id == R.id.nav_courses || currentCourseKey == null) {
             switchTo = new CourseListFragment();

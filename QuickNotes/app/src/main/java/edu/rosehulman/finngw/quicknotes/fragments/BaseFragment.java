@@ -21,7 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import edu.rosehulman.finngw.quicknotes.R;
 
-public class LoginFragment extends Fragment {
+public class BaseFragment extends Fragment {
 
     private static final boolean SHOW_EMAIL_PASSWORD = false;
     private EditText mPasswordView;
@@ -35,13 +35,14 @@ public class LoginFragment extends Fragment {
     private View mGoogleLoginButton;
     private View mEmailLoginButton;
 
-    public LoginFragment() {
+    public BaseFragment() {
         // Required empty constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("GEORGE", "going into Base Fragment");
         mLoggingIn = false;
         mAuth = FirebaseAuth.getInstance();
     }
@@ -50,7 +51,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_login, container, false);
+        View rootView = inflater.inflate(R.layout.app_bar_main, container, false);
 
         mEmailView = (EditText) rootView.findViewById(R.id.email_edit_text);
         mPasswordView = (EditText) rootView.findViewById(R.id.password_edit_text);
@@ -181,4 +182,4 @@ public class LoginFragment extends Fragment {
         void onLogin(String email, String password);
     }
 
- }
+}

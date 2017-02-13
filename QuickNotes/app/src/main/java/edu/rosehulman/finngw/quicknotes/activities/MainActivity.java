@@ -34,6 +34,7 @@ import java.util.Calendar;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.fragments.AlarmListFragment;
+import edu.rosehulman.finngw.quicknotes.fragments.BaseFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.LoginFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.NoteListFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.ReminderListFragment;
@@ -42,6 +43,7 @@ import edu.rosehulman.finngw.quicknotes.models.Note;
 import edu.rosehulman.finngw.quicknotes.models.Reminder;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
+import edu.rosehulman.finngw.quicknotes.utilities.Utils;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -80,10 +82,10 @@ public class MainActivity extends AppCompatActivity implements
             initializeFirebase();
         }
 
-        /*
+
         mAuth = FirebaseAuth.getInstance();
         initializeListeners();
-        */
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -162,18 +164,12 @@ public class MainActivity extends AppCompatActivity implements
                 Log.d(Constants.TAG, "Current user: " + user);
                 if (user == null) {
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.container, new LoginFragment(), "login");
+                    ft.replace(R.id.content_main, new LoginFragment(), "login");
                     ft.commit();
-                    Log.d("TTTTTTTTTT", "Changed to login");
                 } else {
                     SharedPreferencesUtils.setCurrentUser(MainActivity.this, user.getUid());
                     Log.d(Constants.TAG, "User is authenticated");
 
-                    // Currently, if rosefire, email is null. Will be fixed in next version.
-                    if (firebaseAuth.getCurrentUser().getEmail() != null) {
-                        // Email/password.
-                        onLoginComplete(user.getUid());
-                    }
                 }
             }
         };
@@ -181,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements
         mOnCompleteListener = new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(Constants.TAG, "In activity, oncompletelistener");
                 if (!task.isSuccessful()) {
                     showLoginError("Authentication failed.");
                 }
@@ -206,6 +201,9 @@ public class MainActivity extends AppCompatActivity implements
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }
+        if(id == R.id.action_logout) {
+            Utils.signOut(this);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -252,14 +250,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        //mAuth.addAuthStateListener(mAuthStateListener);
+        mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (mAuthStateListener != null) {
-            //mAuth.removeAuthStateListener(mAuthStateListener);
+            mAuth.removeAuthStateListener(mAuthStateListener);
         }
     }
 
@@ -267,11 +265,10 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(Constants.TAG, "User is authenticated");
 
         SharedPreferencesUtils.setCurrentUser(this, uid);
-
-        Fragment switchTo = new NoteListFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, switchTo);
+        ft.replace(R.id.content_main, new BaseFragment());
         ft.commit();
+        Log.d("GEORGE", "going into Base Fragment");
     }
 
     @Override
