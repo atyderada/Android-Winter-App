@@ -5,12 +5,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 import edu.rosehulman.finngw.quicknotes.R;
@@ -25,7 +29,7 @@ public class LoginFragment extends Fragment {
     private boolean mLoggingIn;
     private OnLoginListener mOnLoginListener;
     private DatabaseReference mFirebaseRef;
-    //private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;
 
     public LoginFragment() {
         // Required empty constructor
@@ -35,21 +39,18 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLoggingIn = false;
-        //mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /*
-        View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
-        mEmailView = (EditText) rootView.findViewById(R.id.email);
-        mPasswordView = (EditText) rootView.findViewById(R.id.password);
-        mLoginForm = rootView.findViewById(R.id.login_form);
-        mProgressSpinner = rootView.findViewById(R.id.login_progress);
-        View loginButton = rootView.findViewById(R.id.email_sign_in_button);
-        View rosefireLoginButton = rootView.findViewById(R.id.rosefire_sign_in_button);
+        View rootView = inflater.inflate(R.layout.activity_login, container, false);
+
+        mEmailView = (EditText) rootView.findViewById(R.id.email_edit_text);
+        mPasswordView = (EditText) rootView.findViewById(R.id.password_edit_text);
+        View loginButton = rootView.findViewById(R.id.email_login_button);
 
         if (SHOW_EMAIL_PASSWORD) {
             // Feel free to customize defaults here to speed your testing
@@ -58,56 +59,36 @@ public class LoginFragment extends Fragment {
         } else {
             loginButton.setVisibility(View.GONE);
 
-        mEmailView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_NEXT) {
-                    mPasswordView.requestFocus();
-                    return true;
+            mEmailView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                    if (id == EditorInfo.IME_ACTION_NEXT) {
+                        mPasswordView.requestFocus();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_NULL) {
+            });
+            mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                    if (id == EditorInfo.IME_NULL) {
+                        login();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     login();
-                    return true;
                 }
-                return false;
-            }
-        });
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                login();
-            }
-        });
+            });
 
-        rosefireLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginWithRosefire();
-            }
-        });
-        return rootView;
-        */
-        return null;
-    }
-
-    private void loginWithRosefire() {
-        if (mLoggingIn) {
-            return;
+            return rootView;
         }
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
-        showProgress(true);
-        mLoggingIn = true;
-
-        mOnLoginListener.onRosefireLogin();
-        hideKeyboard();
+        return null;
     }
 
     public void login() {
@@ -201,7 +182,6 @@ public class LoginFragment extends Fragment {
 
     public interface OnLoginListener {
         void onLogin(String email, String password);
-        void onRosefireLogin();
     }
 
  }

@@ -1,6 +1,5 @@
 package edu.rosehulman.finngw.quicknotes.activities;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
@@ -24,12 +23,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
 
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private DatabaseReference mFirebaseRef;
     private FirebaseAuth mAuth;
-    //private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
     private static final int RC_ROSEFIRE_LOGIN = 1;
 
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         mAuth = FirebaseAuth.getInstance();
-        //initializeListeners();
+        initializeListeners();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -94,6 +93,10 @@ public class MainActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, new NoteListFragment(), "notes");
+        ft.commit();
 
         mFirebaseRef = FirebaseDatabase.getInstance().getReference();
 
@@ -203,9 +206,8 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseRef.keepSynced(true);
     }
 
-    /*
     private void initializeListeners() {
-        //mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 Log.d(Constants.TAG, "In activity, authlistener");
@@ -217,29 +219,12 @@ public class MainActivity extends AppCompatActivity implements
                     ft.replace(R.id.container, new LoginFragment(), "login");
                     ft.commit();
                 } else {
-                    SharedPreferencesUtils.setCurrentUser(GradeRecorderActivity.this, user.getUid());
+                    SharedPreferencesUtils.setCurrentUser(MainActivity.this, user.getUid());
                     Log.d(Constants.TAG, "User is authenticated");
-                    mOwnerRef = FirebaseDatabase.getInstance().getReference().child(Constants.OWNERS_PATH).child(user.getUid());
-                    // MB: moved from here
-                    // TODO: Need to differ, if auth via rosefire or email/password.
-                    Log.d(Constants.TAG, " Provider: " + firebaseAuth.getCurrentUser().getProviderId());
-                    Log.d(Constants.TAG, " user display name: " + firebaseAuth.getCurrentUser().getDisplayName());
-                    Log.d(Constants.TAG, " user email: " + firebaseAuth.getCurrentUser().getEmail());
+
                     // Currently, if rosefire, email is null. Will be fixed in next version.
                     if (firebaseAuth.getCurrentUser().getEmail() != null) {
                         // Email/password.
-                        if (mOwnerValueEventListener != null) {
-                            mOwnerRef.removeEventListener(mOwnerValueEventListener);
-                        }
-                        Log.d(Constants.TAG, "Adding OwnerValueListener for " + mOwnerRef.toString());
-                        mOwnerValueEventListener = new GradeRecorderActivity.OwnerValueEventListener();
-                        mOwnerRef.addValueEventListener(mOwnerValueEventListener);
-                        // TODO: This isn't triggering the dialog, as it should.
-                    } else {
-                        // Rosefire: Done
-                        // MB: moved from above
-                        mOwnerRef.child(Owner.USERNAME).setValue(user.getUid());
-                        Log.d(Constants.TAG, "Rosefire worked. UID = " + user.getUid());
                         onLoginComplete(user.getUid());
                     }
                 }
@@ -256,52 +241,24 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
     }
-    */
 
-    /*
    private void showLoginError(String message) {
        LoginFragment loginFragment = (LoginFragment) getSupportFragmentManager().findFragmentByTag("login");
        loginFragment.onLoginError(message);
    }
 
     @Override
-    public void onRosefireLogin() {
-        Intent signInIntent = Rosefire.getSignInIntent(this, Constants.ROSEFIRE_REGISTRY_TOKEN);
-        startActivityForResult(signInIntent, RC_ROSEFIRE_LOGIN);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_ROSEFIRE_LOGIN) {
-            RosefireResult result = Rosefire.getSignInResultFromIntent(data);
-            if (result.isSuccessful()) {
-                firebaseAuthWithRosefire(result);
-            } else {
-                showLoginError("Rosefire authentication failed.");
-            }
-        }
-    }
-
-    private void firebaseAuthWithRosefire(RosefireResult result) {
-        //mAuth.signInWithCustomToken(result.getToken())
-               // .addOnCompleteListener(mOnCompleteListener);
-    }
-    */
-
-    @Override
     public void onStart() {
         super.onStart();
-        //mAuth.addAuthStateListener(mAuthStateListener);
+        mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        /*
         if (mAuthStateListener != null) {
             //mAuth.removeAuthStateListener(mAuthStateListener);
         }
-        */
     }
 
     public void onLoginComplete(String uid) {
@@ -317,12 +274,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLogin(String email, String password) {
-        //mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, mOnCompleteListener);
-    }
-
-    @Override
-    public void onRosefireLogin() {
-
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, mOnCompleteListener);
     }
 
     @Override
@@ -350,35 +302,9 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    class OwnerValueEventListener implements ValueEventListener {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            /*
-            String username = (String) dataSnapshot.child(Owner.USERNAME).getValue();
-            Log.d(Constants.TAG, "Rose username in LoginActivity: " + username);
-            if (username == null) {
-                showUsernameDialog();
-            } else {
-                if (mOwnerValueEventListener != null) {
-                   // mOwnerRef.removeEventListener(mOwnerValueEventListener);
-                }
-                // TODO: check if this is correct
-                String currentUser = SharedPreferencesUtils.getCurrentUser(MainActivity.this);
-                Log.d(Constants.TAG, String.format(Locale.US, "Sharedprefs current user: [%s]\n", currentUser));
-                onLoginComplete(currentUser);
-            }
-            */
-        }
-
-        @Override
-        public void onCancelled(DatabaseError firebaseError) {
-            Log.d(Constants.TAG, "OwnerValueListener cancelled: " + firebaseError);
-        }
-    }
-
+    /*
     @SuppressLint("InflateParams")
     private void showUsernameDialog() {
-        /*
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Rose username");
         View view = getLayoutInflater().inflate(R.layout.dialog_get_rose_username, null);
@@ -397,8 +323,8 @@ public class MainActivity extends AppCompatActivity implements
                 }
         );
         builder.create().show();
-        */
     }
+    */
 
     public void addAlarm(String title, String description) {
 

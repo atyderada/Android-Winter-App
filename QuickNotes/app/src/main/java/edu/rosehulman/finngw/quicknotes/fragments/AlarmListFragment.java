@@ -30,7 +30,7 @@ public class AlarmListFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_alarm_list, container, false);
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.note_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.alarm_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setHasFixedSize(true);
         registerForContextMenu(recyclerView);
