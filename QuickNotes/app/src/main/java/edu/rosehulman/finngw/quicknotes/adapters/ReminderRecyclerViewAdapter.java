@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.fragments.ReminderListFragment;
-import edu.rosehulman.finngw.quicknotes.models.Note;
 import edu.rosehulman.finngw.quicknotes.models.Reminder;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
@@ -43,32 +42,32 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
 
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
-        mRemindersRef = FirebaseDatabase.getInstance().getReference().child(Constants.NOTES_PATH);
+        mRemindersRef = FirebaseDatabase.getInstance().getReference().child(Constants.REMINDERS_PATH);
         // Deep query. Find the courses owned by me
         Query query = mRemindersRef.orderByChild("owners/" + mUid).equalTo(true);
         query.addChildEventListener(new RemindersChildEventListener());
     }
 
-    public void firebasePush(String noteTitle, String noteDescription) {
-        Note note = new Note(noteTitle, noteDescription, mUid);
-        DatabaseReference noteRef = mRemindersRef.push();
-        String noteKey = noteRef.getKey();
-        noteRef.setValue(note);
+    public void firebasePush(String reminderTitle, String reminderDescription, String date, int year, int month, int day) {
+        Reminder reminder = new Reminder(reminderTitle, reminderDescription, mUid, year, month, day);
+        DatabaseReference reminderRef = mRemindersRef.push();
+        String reminderKey = reminderRef.getKey();
+        reminderRef.setValue(reminder);
     }
 
-    public void firebaseEdit(Note note, String newNoteTitle, String newNoteDescription) {
-        note.setTitle(newNoteTitle);
-        note.setDescription(newNoteDescription);
-        mRemindersRef.child(note.getKey()).setValue(note);
+    public void firebaseEdit(Reminder reminder, String newReminderTitle, String newReminderDescription) {
+        reminder.setTitle(newReminderTitle);
+        reminder.setDescription(newReminderDescription);
+        mRemindersRef.child(reminder.getKey()).setValue(reminder);
     }
 
-    public void firebaseRemove(Note noteToRemove) {
-        mRemindersRef.child(noteToRemove.getKey()).removeValue();
+    public void firebaseRemove(Reminder reminderToRemove) {
+        mRemindersRef.child(reminderToRemove.getKey()).removeValue();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_row_view, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_reminder, parent, false);
         return new ReminderRecyclerViewAdapter.ViewHolder(v);
     }
 

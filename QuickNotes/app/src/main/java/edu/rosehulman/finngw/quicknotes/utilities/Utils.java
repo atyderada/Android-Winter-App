@@ -1,26 +1,11 @@
 package edu.rosehulman.finngw.quicknotes.utilities;
 
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-
-import edu.rosehulman.graderecorderfirebase.models.Assignment;
-import edu.rosehulman.graderecorderfirebase.models.Course;
-import edu.rosehulman.graderecorderfirebase.models.Owner;
-
 /**
  * Created by Matt Boutell on 10/2/2015. Utility class that handles bookkeeping and one-off
  * access to Firebase.
  */
 public class Utils {
+    /*
     public static void removeCourse(Context context, Course course) {
         // MB: Moved to first to try to speed up UI. Test for race conditions.
         // Removes from list of courses
@@ -109,4 +94,5 @@ public class Utils {
     public interface FragmentWithToolbar {
         void setToolbarTitle(String courseName);
     }
+    */
 }

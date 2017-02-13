@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.fragments.AlarmListFragment;
 import edu.rosehulman.finngw.quicknotes.models.Alarm;
-import edu.rosehulman.finngw.quicknotes.models.Note;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 
@@ -42,27 +41,27 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
-        mAlarmsRef = FirebaseDatabase.getInstance().getReference().child(Constants.NOTES_PATH);
+        mAlarmsRef = FirebaseDatabase.getInstance().getReference().child(Constants.ALARMS_PATH);
         // Deep query. Find the courses owned by me
         Query query = mAlarmsRef.orderByChild("owners/" + mUid).equalTo(true);
         query.addChildEventListener(new AlarmRecyclerViewAdapter.AlarmsChildEventListener());
     }
 
-    public void firebasePush(String noteTitle, String noteDescription) {
-        Note note = new Note(noteTitle, noteDescription, mUid);
-        DatabaseReference noteRef = mAlarmsRef.push();
-        String noteKey = noteRef.getKey();
-        noteRef.setValue(note);
+    public void firebasePush(String alarmTitle, String alarmDescription, int hour, int minutes) {
+        Alarm alarm = new Alarm(alarmTitle, alarmDescription, mUid, hour, minutes);
+        DatabaseReference alarmRef = mAlarmsRef.push();
+        String alarmKey = alarmRef.getKey();
+        alarmRef.setValue(alarm);
     }
 
-    public void firebaseEdit(Note note, String newNoteTitle, String newNoteDescription) {
-        note.setTitle(newNoteTitle);
-        note.setDescription(newNoteDescription);
-        mAlarmsRef.child(note.getKey()).setValue(note);
+    public void firebaseEdit(Alarm alarm, String newAlarmTitle, String newAlarmDescription) {
+        alarm.setTitle(newAlarmTitle);
+        alarm.setDescription(newAlarmDescription);
+        mAlarmsRef.child(alarm.getKey()).setValue(alarm);
     }
 
-    public void firebaseRemove(Note noteToRemove) {
-        mAlarmsRef.child(noteToRemove.getKey()).removeValue();
+    public void firebaseRemove(Alarm alarmToRemove) {
+        mAlarmsRef.child(alarmToRemove.getKey()).removeValue();
     }
 
     @Override

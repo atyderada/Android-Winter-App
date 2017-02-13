@@ -2,25 +2,18 @@ package edu.rosehulman.finngw.quicknotes.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
-import edu.rosehulman.graderecorderfirebase.R;
-import edu.rosehulman.graderecorderfirebase.activities.GradeRecorderActivity;
-
+import edu.rosehulman.finngw.quicknotes.R;
 
 public class LoginFragment extends Fragment {
 
@@ -48,6 +41,7 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        /*
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
         mEmailView = (EditText) rootView.findViewById(R.id.email);
@@ -63,7 +57,6 @@ public class LoginFragment extends Fragment {
             mPasswordView.setText("aaaaaa");
         } else {
             loginButton.setVisibility(View.GONE);
-        }
 
         mEmailView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -99,6 +92,8 @@ public class LoginFragment extends Fragment {
             }
         });
         return rootView;
+        */
+        return null;
     }
 
     private void loginWithRosefire() {

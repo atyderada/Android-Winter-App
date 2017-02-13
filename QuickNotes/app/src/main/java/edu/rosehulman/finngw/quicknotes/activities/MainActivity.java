@@ -1,6 +1,8 @@
 package edu.rosehulman.finngw.quicknotes.activities;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,13 +17,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Calendar;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.fragments.AlarmListFragment;
@@ -48,8 +58,7 @@ public class MainActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
 
     private DatabaseReference mFirebaseRef;
-    private DatabaseReference mOwnerRef;
-    //private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;
     //private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
     private static final int RC_ROSEFIRE_LOGIN = 1;
@@ -66,11 +75,14 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(mToolbar);
         mToolbar.setBackgroundColor(Color.WHITE);
 
+        final TextView mTitleTextView = (TextView)findViewById(R.id.title_input);
+        final TextView mDescriptionTextView = (TextView)findViewById(R.id.description_input);
+
         if (savedInstanceState == null) {
             initializeFirebase();
         }
 
-        //mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         //initializeListeners();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -87,23 +99,16 @@ public class MainActivity extends AppCompatActivity implements
 
         onEdit = false;
 
-        /*
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new CardListAdapter(null, this);
-        mRecyclerView.setAdapter(mAdapter);
-
-        mContentView = findViewById(R.id.fullscreen_content);
-
         ImageButton mAlarmImgeView = (ImageButton) findViewById(R.id.alarm_button);
         mAlarmImgeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAdapter.addAlarm(titleTextView.getText().toString(), descriptionTextView.getText().toString());
-                titleTextView.setText("");
-                descriptionTextView.setText("");
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new AlarmListFragment(), "alarms");
+                ft.commit();
+                addAlarm(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
+                mTitleTextView.setText("");
+                mDescriptionTextView.setText("");
                 onEdit = false;
             }
         });
@@ -112,9 +117,12 @@ public class MainActivity extends AppCompatActivity implements
         mReminderImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAdapter.addReminder(titleTextView.getText().toString(), descriptionTextView.getText().toString());
-                titleTextView.setText("");
-                descriptionTextView.setText("");
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new ReminderListFragment(), "reminders");
+                ft.commit();
+                addAlarm(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
+                mTitleTextView.setText("");
+                mDescriptionTextView.setText("");
                 onEdit = false;
             }
         });
@@ -123,13 +131,15 @@ public class MainActivity extends AppCompatActivity implements
         mNoteImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAdapter.addNote(titleTextView.getText().toString(), descriptionTextView.getText().toString());
-                titleTextView.setText("");
-                descriptionTextView.setText("");
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new NoteListFragment(), "notes");
+                ft.commit();
+                addNote(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
+                mTitleTextView.setText("");
+                mDescriptionTextView.setText("");
                 onEdit = false;
             }
         });
-        */
     }
 
     @Override
@@ -195,12 +205,11 @@ public class MainActivity extends AppCompatActivity implements
 
     /*
     private void initializeListeners() {
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+        //mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 Log.d(Constants.TAG, "In activity, authlistener");
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-
 
                 Log.d(Constants.TAG, "Current user: " + user);
                 if (user == null) {
@@ -389,5 +398,59 @@ public class MainActivity extends AppCompatActivity implements
         );
         builder.create().show();
         */
+    }
+
+    public void addAlarm(String title, String description) {
+
+        final String alarmTitle = title;
+        final String alarmDescription = description;
+
+        // Launch Dialog
+        Calendar mCurrentTime = Calendar.getInstance();
+        int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mCurrentTime.get(Calendar.MINUTE);
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                Alarm alarm = new Alarm(alarmTitle, alarmDescription, mAuth.getCurrentUser().getUid(), hourOfDay, minute);
+                DatabaseReference alarmRef = mFirebaseRef.child(Constants.ALARMS_PATH).push();
+                alarmRef.setValue(alarm);
+            }
+        }, hour, minute, true);
+        mTimePicker.setTitle("Select Alarm Time");
+        mTimePicker.show();
+    }
+
+    public void addNote(String title, String description) {
+        final String noteTitle = title;
+        final String noteDescription = description;
+
+        Note note = new Note(noteTitle, noteDescription, mAuth.getCurrentUser().getUid());
+        DatabaseReference noteRef = mFirebaseRef.child(Constants.NOTES_PATH).push();
+        noteRef.setValue(note);
+
+    }
+
+    public void addReminder(String title, String description) {
+        final String reminderTitle = title;
+        final String reminderDescription = description;
+
+        // launch dialog
+        Calendar mCurrentDate = Calendar.getInstance();
+        int day = mCurrentDate.get(Calendar.DAY_OF_MONTH);
+        int month = mCurrentDate.get(Calendar.MONTH);
+        int year = mCurrentDate.get(Calendar.YEAR);
+        DatePickerDialog mDatePicker;
+        mDatePicker = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                Reminder reminder = new Reminder(reminderTitle, reminderDescription, mAuth.getCurrentUser().getUid(), year, month + 1, dayOfMonth);
+                DatabaseReference reminderRef = mFirebaseRef.child(Constants.REMINDERS_PATH).push();
+                reminderRef.setValue(reminder);
+            }
+        }, year, month, day);
+        mDatePicker.setTitle("Select a Date");
+        mDatePicker.show();
     }
 }

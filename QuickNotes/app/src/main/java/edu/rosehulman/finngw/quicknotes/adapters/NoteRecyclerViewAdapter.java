@@ -65,7 +65,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
 
     @Override
     public NoteRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_row_view, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_note, parent, false);
         return new NoteRecyclerViewAdapter.ViewHolder(v);
     }
 
