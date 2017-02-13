@@ -16,10 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
-    private static final int RC_ROSEFIRE_LOGIN = 1;
 
     private boolean onEdit;
 
@@ -74,15 +70,19 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(mToolbar);
         mToolbar.setBackgroundColor(Color.WHITE);
 
+        /*
         final TextView mTitleTextView = (TextView)findViewById(R.id.title_input);
         final TextView mDescriptionTextView = (TextView)findViewById(R.id.description_input);
+        */
 
         if (savedInstanceState == null) {
             initializeFirebase();
         }
 
+        /*
         mAuth = FirebaseAuth.getInstance();
         initializeListeners();
+        */
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -95,13 +95,14 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, new NoteListFragment(), "notes");
+        ft.add(R.id.container, new NoteListFragment(), "notes");
         ft.commit();
 
         mFirebaseRef = FirebaseDatabase.getInstance().getReference();
 
         onEdit = false;
 
+        /*
         ImageButton mAlarmImgeView = (ImageButton) findViewById(R.id.alarm_button);
         mAlarmImgeView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,6 +144,50 @@ public class MainActivity extends AppCompatActivity implements
                 onEdit = false;
             }
         });
+        */
+    }
+
+    private void initializeFirebase() {
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        mFirebaseRef = FirebaseDatabase.getInstance().getReference();
+        mFirebaseRef.keepSynced(true);
+    }
+
+    private void initializeListeners() {
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                Log.d(Constants.TAG, "In activity, authlistener");
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                Log.d(Constants.TAG, "Current user: " + user);
+                if (user == null) {
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.container, new LoginFragment(), "login");
+                    ft.commit();
+                    Log.d("TTTTTTTTTT", "Changed to login");
+                } else {
+                    SharedPreferencesUtils.setCurrentUser(MainActivity.this, user.getUid());
+                    Log.d(Constants.TAG, "User is authenticated");
+
+                    // Currently, if rosefire, email is null. Will be fixed in next version.
+                    if (firebaseAuth.getCurrentUser().getEmail() != null) {
+                        // Email/password.
+                        onLoginComplete(user.getUid());
+                    }
+                }
+            }
+        };
+
+        mOnCompleteListener = new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(Constants.TAG, "In activity, oncompletelistener");
+                if (!task.isSuccessful()) {
+                    showLoginError("Authentication failed.");
+                }
+            }
+        };
     }
 
     @Override
@@ -200,48 +245,6 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    private void initializeFirebase() {
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        mFirebaseRef = FirebaseDatabase.getInstance().getReference();
-        mFirebaseRef.keepSynced(true);
-    }
-
-    private void initializeListeners() {
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                Log.d(Constants.TAG, "In activity, authlistener");
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-
-                Log.d(Constants.TAG, "Current user: " + user);
-                if (user == null) {
-                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.container, new LoginFragment(), "login");
-                    ft.commit();
-                } else {
-                    SharedPreferencesUtils.setCurrentUser(MainActivity.this, user.getUid());
-                    Log.d(Constants.TAG, "User is authenticated");
-
-                    // Currently, if rosefire, email is null. Will be fixed in next version.
-                    if (firebaseAuth.getCurrentUser().getEmail() != null) {
-                        // Email/password.
-                        onLoginComplete(user.getUid());
-                    }
-                }
-            }
-        };
-
-        mOnCompleteListener = new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(Constants.TAG, "In activity, oncompletelistener");
-                if (!task.isSuccessful()) {
-                    showLoginError("Authentication failed.");
-                }
-            }
-        };
-    }
-
    private void showLoginError(String message) {
        LoginFragment loginFragment = (LoginFragment) getSupportFragmentManager().findFragmentByTag("login");
        loginFragment.onLoginError(message);
@@ -250,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthStateListener);
+        //mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override

@@ -12,7 +12,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -42,8 +41,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
 
         mNotesRef = FirebaseDatabase.getInstance().getReference().child(Constants.NOTES_PATH);
         // Deep query. Find the courses owned by me
-        Query query = mNotesRef.orderByChild("owners/" + mUid).equalTo(true);
-        query.addChildEventListener(new NotesChildEventListener());
+        Log.d("NTNTNTNNTNT", "connecting to notes folder");
     }
 
     public void firebasePush(String noteTitle, String noteDescription) {
