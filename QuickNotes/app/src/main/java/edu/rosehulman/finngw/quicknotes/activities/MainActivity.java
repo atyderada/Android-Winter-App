@@ -16,7 +16,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,10 +73,8 @@ public class MainActivity extends AppCompatActivity implements
         setSupportActionBar(mToolbar);
         mToolbar.setBackgroundColor(Color.WHITE);
 
-        /*
         final TextView mTitleTextView = (TextView)findViewById(R.id.title_input);
         final TextView mDescriptionTextView = (TextView)findViewById(R.id.description_input);
-        */
 
         if (savedInstanceState == null) {
             initializeFirebase();
@@ -102,7 +103,6 @@ public class MainActivity extends AppCompatActivity implements
 
         onEdit = false;
 
-        /*
         ImageButton mAlarmImgeView = (ImageButton) findViewById(R.id.alarm_button);
         mAlarmImgeView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements
                 onEdit = false;
             }
         });
-        */
     }
 
     private void initializeFirebase() {
