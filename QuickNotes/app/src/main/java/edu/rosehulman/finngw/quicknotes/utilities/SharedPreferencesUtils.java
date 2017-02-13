@@ -3,6 +3,7 @@ package edu.rosehulman.finngw.quicknotes.utilities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 /**
  * Created by Matt Boutell on 10/2/2015.
