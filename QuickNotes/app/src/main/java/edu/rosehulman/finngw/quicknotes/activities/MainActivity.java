@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private Toolbar mToolbar;
 
-    private DatabaseReference mFirebaseRef;
+    private FirebaseDatabase mFirebase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements
         ft.add(R.id.container, new NoteListFragment(), "notes");
         ft.commit();
 
-        mFirebaseRef = FirebaseDatabase.getInstance().getReference();
+        mFirebase = FirebaseDatabase.getInstance();
 
         onEdit = false;
 
@@ -148,8 +148,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initializeFirebase() {
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        mFirebaseRef = FirebaseDatabase.getInstance().getReference();
-        mFirebaseRef.keepSynced(true);
+        mFirebase = FirebaseDatabase.getInstance();
+        mFirebase.getReference().keepSynced(true);
     }
 
     private void initializeListeners() {
@@ -342,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 Alarm alarm = new Alarm(alarmTitle, alarmDescription, mAuth.getCurrentUser().getUid(), hourOfDay, minute);
-                DatabaseReference alarmRef = mFirebaseRef.child(Constants.ALARMS_PATH).push();
+                DatabaseReference alarmRef = mFirebase.getReference(Constants.ALARMS_PATH).push();
                 alarmRef.setValue(alarm);
             }
         }, hour, minute, true);
@@ -354,10 +354,10 @@ public class MainActivity extends AppCompatActivity implements
         final String noteTitle = title;
         final String noteDescription = description;
 
-        Note note = new Note(noteTitle, noteDescription, mAuth.getCurrentUser().getUid());
-        DatabaseReference noteRef = mFirebaseRef.child(Constants.NOTES_PATH).push();
+        Note note = new Note(noteTitle, noteDescription, "deradaam");
+        DatabaseReference noteRef = mFirebase.getReference(Constants.NOTES_PATH).push();
         noteRef.setValue(note);
-
+        Log.d("ADD_NOTE", "Adding Note");
     }
 
     public void addReminder(String title, String description) {
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 Reminder reminder = new Reminder(reminderTitle, reminderDescription, mAuth.getCurrentUser().getUid(), year, month + 1, dayOfMonth);
-                DatabaseReference reminderRef = mFirebaseRef.child(Constants.REMINDERS_PATH).push();
+                DatabaseReference reminderRef = mFirebase.getReference(Constants.REMINDERS_PATH).push();
                 reminderRef.setValue(reminder);
             }
         }, year, month, day);

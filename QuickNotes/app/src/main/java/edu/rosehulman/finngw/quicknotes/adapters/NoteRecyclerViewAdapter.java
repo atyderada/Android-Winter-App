@@ -39,9 +39,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
 
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
-        mNotesRef = FirebaseDatabase.getInstance().getReference().child(Constants.NOTES_PATH);
-        // Deep query. Find the courses owned by me
-        Log.d("NTNTNTNNTNT", "connecting to notes folder");
+        mNotesRef = FirebaseDatabase.getInstance().getReference(Constants.NOTES_PATH);
     }
 
     public void firebasePush(String noteTitle, String noteDescription) {
