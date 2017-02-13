@@ -12,7 +12,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -32,20 +31,16 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
     private ArrayList<Reminder> mReminders = new ArrayList<>();
 
     public ReminderRecyclerViewAdapter(ReminderListFragment reminderListFragment, ReminderListFragment.OnReminderSelectedListener listener) {
-        Log.d(Constants.TAG, "CourseAdapter adding OwnerValueListener");
 
         mReminderListFragment = reminderListFragment;
         mReminderSelectedListener = listener;
 
-        mUid = SharedPreferencesUtils.getCurrentUser(reminderListFragment.getContext());
-        Log.d(Constants.TAG, "Current user: " + mUid);
+        mUid = SharedPreferencesUtils.getCurrentUser(reminderListFragment.getContext());Log.d(Constants.TAG, "Current user: " + mUid);
 
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
-        mRemindersRef = FirebaseDatabase.getInstance().getReference().child(Constants.REMINDERS_PATH);
-        // Deep query. Find the courses owned by me
-        Query query = mRemindersRef.orderByChild("owners/" + mUid).equalTo(true);
-        query.addChildEventListener(new RemindersChildEventListener());
+        mRemindersRef = FirebaseDatabase.getInstance().getReference(Constants.REMINDERS_PATH);
+        mRemindersRef.addChildEventListener(new RemindersChildEventListener());
     }
 
     public void firebasePush(String reminderTitle, String reminderDescription, String date, int year, int month, int day) {
@@ -105,7 +100,7 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d(Constants.TAG, "My course: " + dataSnapshot);
+            Log.d(Constants.TAG, "My reminder: " + dataSnapshot);
             add(dataSnapshot);
             notifyDataSetChanged();
         }

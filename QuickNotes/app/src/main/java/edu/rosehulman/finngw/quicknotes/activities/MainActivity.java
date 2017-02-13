@@ -82,10 +82,8 @@ public class MainActivity extends AppCompatActivity implements
             initializeFirebase();
         }
 
-
         mAuth = FirebaseAuth.getInstance();
         initializeListeners();
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -126,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.container, new ReminderListFragment(), "reminders");
                 ft.commit();
-                addAlarm(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
+                addReminder(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
                 mTitleTextView.setText("");
                 mDescriptionTextView.setText("");
                 onEdit = false;
@@ -223,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements
             switchTo = new AlarmListFragment();
             tag = "alarms";
         } else if (id == R.id.nav_reminders) {
-            switchTo = new AlarmListFragment();
+            switchTo = new ReminderListFragment();
             tag = "alarms";
         } else if (id == R.id.nav_share) {
 
@@ -351,10 +349,9 @@ public class MainActivity extends AppCompatActivity implements
         final String noteTitle = title;
         final String noteDescription = description;
 
-        Note note = new Note(noteTitle, noteDescription, "deradaam");
+        Note note = new Note(noteTitle, noteDescription, mAuth.getCurrentUser().getUid());
         DatabaseReference noteRef = mFirebase.getReference(Constants.NOTES_PATH).push();
         noteRef.setValue(note);
-        Log.d("ADD_NOTE", "Adding Note");
     }
 
     public void addReminder(String title, String description) {

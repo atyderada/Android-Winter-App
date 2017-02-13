@@ -12,7 +12,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -37,14 +36,11 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         mAlarmSelectedListener = listener;
 
         mUid = SharedPreferencesUtils.getCurrentUser(alarmListFragment.getContext());
-        Log.d(Constants.TAG, "Current user: " + mUid);
 
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
-        mAlarmsRef = FirebaseDatabase.getInstance().getReference().child(Constants.ALARMS_PATH);
-        // Deep query. Find the courses owned by me
-        Query query = mAlarmsRef.orderByChild("owners/" + mUid).equalTo(true);
-        query.addChildEventListener(new AlarmRecyclerViewAdapter.AlarmsChildEventListener());
+        mAlarmsRef = FirebaseDatabase.getInstance().getReference(Constants.ALARMS_PATH);
+        mAlarmsRef.addChildEventListener(new AlarmsChildEventListener());
     }
 
     public void firebasePush(String alarmTitle, String alarmDescription, int hour, int minutes) {
@@ -65,13 +61,16 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
     }
 
     @Override
-    public AlarmRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_alarm, parent, false);
         return new AlarmRecyclerViewAdapter.ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.mAlarmTitleTextView.setText(mAlarms.get(position).getTitle());
+        holder.mAlarmDescriptionTextView.setText(mAlarms.get(position).getDescription());
+        holder.mAlarmTimeTextView.setText(mAlarms.get(position).getTime());
     }
 
     @Override
@@ -100,7 +99,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-            Log.d(Constants.TAG, "My course: " + dataSnapshot);
+            Log.d(Constants.TAG, "My alarm: " + dataSnapshot);
             add(dataSnapshot);
             notifyDataSetChanged();
         }
@@ -147,7 +146,6 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
         @Override
         public void onClick(View v) {
-            SharedPreferencesUtils.setCurrentCourseKey(mAlarmListFragment.getContext(), mAlarms.get(getAdapterPosition()).getKey());
             Alarm alarm = mAlarms.get(getAdapterPosition());
             mAlarmSelectedListener.onAlarmSelected(alarm);
         }

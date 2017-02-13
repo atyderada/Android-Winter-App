@@ -25,10 +25,10 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
 
     private final NoteListFragment mNoteListFragment;
 
-    private final NoteListFragment.OnNoteSelectedListener mNoteSelectedListener;
     private String mUid;
     private DatabaseReference mNotesRef;
     private ArrayList<Note> mNotes = new ArrayList<>();
+    private final NoteListFragment.OnNoteSelectedListener mNoteSelectedListener;
 
     public NoteRecyclerViewAdapter(NoteListFragment noteListFragment, NoteListFragment.OnNoteSelectedListener listener) {
 
@@ -40,6 +40,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
         mNotesRef = FirebaseDatabase.getInstance().getReference(Constants.NOTES_PATH);
+        mNotesRef.addChildEventListener(new NotesChildEventListener());
     }
 
     public void firebasePush(String noteTitle, String noteDescription) {
