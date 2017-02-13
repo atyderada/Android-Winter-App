@@ -1,77 +1,161 @@
 package edu.rosehulman.finngw.quicknotes.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import edu.rosehulman.finngw.quicknotes.fragments.ItemFragment.OnListFragmentInteractionListener;
-import edu.rosehulman.finngw.quicknotes.fragments.dummy.DummyContent.DummyItem;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
-import java.util.List;
+import java.util.ArrayList;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+import edu.rosehulman.finngw.quicknotes.R;
+import edu.rosehulman.finngw.quicknotes.fragments.NoteListFragment;
+import edu.rosehulman.finngw.quicknotes.models.Note;
+import edu.rosehulman.finngw.quicknotes.utilities.Constants;
+import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
+
 public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final NoteListFragment mNoteListFragment;
 
-    public NoteRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
-        mListener = listener;
+    private final NoteListFragment.OnNoteSelectedListener mNoteSelectedListener;
+    private String mUid;
+    private DatabaseReference mNotesRef;
+    private ArrayList<Note> mNotes = new ArrayList<>();
+
+    public NoteRecyclerViewAdapter(NoteListFragment noteListFragment, NoteListFragment.OnNoteSelectedListener listener) {
+
+        mNoteListFragment = noteListFragment;
+        mNoteSelectedListener = listener;
+
+        mUid = SharedPreferencesUtils.getCurrentUser(noteListFragment.getContext());
+
+        assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
+
+        mNotesRef = FirebaseDatabase.getInstance().getReference().child(Constants.NOTES_PATH);
+        // Deep query. Find the courses owned by me
+        Query query = mNotesRef.orderByChild("owners/" + mUid).equalTo(true);
+        query.addChildEventListener(new NotesChildEventListener());
+    }
+
+    public void firebasePush(String noteTitle, String noteDescription) {
+        Note note = new Note(noteTitle, noteDescription, mUid);
+        DatabaseReference noteRef = mNotesRef.push();
+        String noteKey = noteRef.getKey();
+        noteRef.setValue(note);
+    }
+
+    public void firebaseEdit(Note note, String newNoteTitle, String newNoteDescription) {
+        note.setTitle(newNoteTitle);
+        note.setDescription(newNoteDescription);
+        mNotesRef.child(note.getKey()).setValue(note);
+    }
+
+    public void firebaseRemove(Note noteToRemove) {
+        mNotesRef.child(noteToRemove.getKey()).removeValue();
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_item, parent, false);
-        return new ViewHolder(view);
+    public NoteRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_row_view, parent, false);
+        return new NoteRecyclerViewAdapter.ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.mNoteTitleTextView.setText(mNotes.get(position).getTitle());
+        holder.mNoteDescriptionTextView.setText(mNotes.get(position).getDescription());
+    }
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+    @Override
+    public int getItemCount() { return mNotes.size(); }
+
+    class NotesChildEventListener implements ChildEventListener {
+        // While we don't push up deletes, we need to listen for other owners deleting our course.
+
+        private void add(DataSnapshot dataSnapshot) {
+            Note note = dataSnapshot.getValue(Note.class);
+            note.setKey(dataSnapshot.getKey());
+            mNotes.add(note);
+        }
+
+        private int remove(String key) {
+            for (Note note : mNotes) {
+                if (note.getKey().equals(key)) {
+                    int foundPos = mNotes.indexOf(note);
+                    mNotes.remove(note);
+                    return foundPos;
                 }
             }
-        });
-    }
+            return -1;
+        }
 
-    @Override
-    public int getItemCount() {
-        return mValues.size();
-    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
-
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d(Constants.TAG, "My course: " + dataSnapshot);
+            add(dataSnapshot);
+            notifyDataSetChanged();
         }
 
         @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            remove(dataSnapshot.getKey());
+            add(dataSnapshot);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            int position = remove(dataSnapshot.getKey());
+            if (position >= 0) {
+                notifyItemRemoved(position);
+            }
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            // empty
+        }
+
+        @Override
+        public void onCancelled(DatabaseError firebaseError) {
+            Log.e("TAG", "onCancelled. Error: " + firebaseError.getMessage());
+        }
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        private TextView mNoteTitleTextView;
+        private TextView mNoteDescriptionTextView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            mNoteTitleTextView = (TextView) itemView.findViewById(R.id.title_note_text);
+            mNoteDescriptionTextView = (TextView) itemView.findViewById(R.id.description_note_text);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            SharedPreferencesUtils.setCurrentCourseKey(mNoteListFragment.getContext(), mNotes.get(getAdapterPosition()).getKey());
+            Note note = mNotes.get(getAdapterPosition());
+            mNoteSelectedListener.onNoteSelected(note);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Note course = mNotes.get(getAdapterPosition());
+            //mNoteListFragment.showNoteDialog(course);
+            return true;
         }
     }
 }

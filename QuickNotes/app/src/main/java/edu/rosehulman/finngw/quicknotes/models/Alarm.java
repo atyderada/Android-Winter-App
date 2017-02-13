@@ -11,8 +11,8 @@ public class Alarm extends Card {
 
     public Alarm(){}
 
-    public Alarm(String t, String d, int h, int m) {
-        super(t, d);
+    public Alarm(String t, String d, String uid, int h, int m) {
+        super(t, d, uid);
         if(h < 10) {
             time = 0 + "" + h + m;
         } else {

@@ -1,11 +1,8 @@
 package edu.rosehulman.finngw.quicknotes.fragments;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,33 +23,24 @@ public class NoteListFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_note_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            //recyclerView.setAdapter(new NoteRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-        }
-        return view;
+        Context context = getContext();
+
+        View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
+
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.note_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        recyclerView.setHasFixedSize(true);
+        registerForContextMenu(recyclerView);
+        mAdapter = new NoteRecyclerViewAdapter(this, mListener);
+        recyclerView.setAdapter(mAdapter);
+
+        return rootView;
     }
 
+    /*
     private void showDeleteConfirmationDialog(final Note note) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.remove_question_format, note.getName()));
@@ -65,7 +53,7 @@ public class NoteListFragment extends Fragment {
         builder.setNegativeButton(android.R.string.cancel, null);
         builder.create().show();
     }
-
+    */
 
     @Override
     public void onAttach(Context context) {

@@ -1,53 +1,6 @@
 package edu.rosehulman.finngw.quicknotes.activities;
 
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Locale;
-
-import edu.rosehulman.graderecorderfirebase.Constants;
-import edu.rosehulman.graderecorderfirebase.R;
-import edu.rosehulman.graderecorderfirebase.fragments.AssignmentListFragment;
-import edu.rosehulman.graderecorderfirebase.fragments.CourseListFragment;
-import edu.rosehulman.graderecorderfirebase.fragments.LoginFragment;
-import edu.rosehulman.graderecorderfirebase.fragments.OwnerListFragment;
-import edu.rosehulman.graderecorderfirebase.fragments.StudentListFragment;
-import edu.rosehulman.graderecorderfirebase.models.Assignment;
-import edu.rosehulman.graderecorderfirebase.models.Course;
-import edu.rosehulman.graderecorderfirebase.models.Owner;
-import edu.rosehulman.graderecorderfirebase.utils.SharedPreferencesUtils;
-import edu.rosehulman.graderecorderfirebase.utils.Utils;
-import edu.rosehulman.rosefire.Rosefire;
-import edu.rosehulman.rosefire.RosefireResult;
-
+/*
 public class GradeRecorderActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         LoginFragment.OnLoginListener,
@@ -55,6 +8,7 @@ public class GradeRecorderActivity extends AppCompatActivity implements
         CourseListFragment.OnCourseSelectedListener,
         OwnerListFragment.OnThisOwnerRemovedListener {
 
+    /*
     private FloatingActionButton mFab;
     private Toolbar mToolbar;
 
@@ -348,3 +302,4 @@ public class GradeRecorderActivity extends AppCompatActivity implements
         builder.create().show();
     }
 }
+*/

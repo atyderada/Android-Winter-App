@@ -1,8 +1,6 @@
 package edu.rosehulman.finngw.quicknotes.activities;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,30 +10,27 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Locale;
-
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.fragments.AlarmListFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.LoginFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.NoteListFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.ReminderListFragment;
+import edu.rosehulman.finngw.quicknotes.models.Alarm;
+import edu.rosehulman.finngw.quicknotes.models.Note;
+import edu.rosehulman.finngw.quicknotes.models.Reminder;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 
@@ -54,10 +49,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private DatabaseReference mFirebaseRef;
     private DatabaseReference mOwnerRef;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    //private FirebaseAuth mAuth;
+    //private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
-    private GradeRecorderActivity.OwnerValueEventListener mOwnerValueEventListener;
     private static final int RC_ROSEFIRE_LOGIN = 1;
 
     private boolean onEdit;
@@ -260,7 +254,6 @@ public class MainActivity extends AppCompatActivity implements
        LoginFragment loginFragment = (LoginFragment) getSupportFragmentManager().findFragmentByTag("login");
        loginFragment.onLoginError(message);
    }
-   */
 
     @Override
     public void onRosefireLogin() {
@@ -281,27 +274,25 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void firebaseAuthWithRosefire(RosefireResult result) {
-        mAuth.signInWithCustomToken(result.getToken())
-                .addOnCompleteListener(mOnCompleteListener);
+        //mAuth.signInWithCustomToken(result.getToken())
+               // .addOnCompleteListener(mOnCompleteListener);
     }
+    */
 
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthStateListener);
+        //mAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        /*
         if (mAuthStateListener != null) {
-            mAuth.removeAuthStateListener(mAuthStateListener);
+            //mAuth.removeAuthStateListener(mAuthStateListener);
         }
-        // Was in fragment onDetach
-        if (mOwnerValueEventListener != null) {
-            mOwnerRef.removeEventListener(mOwnerValueEventListener);
-        }
-        mOwnerValueEventListener = null;
+        */
     }
 
     public void onLoginComplete(String uid) {
@@ -309,14 +300,7 @@ public class MainActivity extends AppCompatActivity implements
 
         SharedPreferencesUtils.setCurrentUser(this, uid);
 
-        // Check if they have a current course
-        String currentCourseKey = SharedPreferencesUtils.getCurrentCourseKey(this);
-        Fragment switchTo;
-        if (currentCourseKey == null || currentCourseKey.isEmpty()) {
-            switchTo = new CourseListFragment();
-        } else {
-            switchTo = AssignmentListFragment.newInstance(currentCourseKey);
-        }
+        Fragment switchTo = new NoteListFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, switchTo);
         ft.commit();
@@ -324,8 +308,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLogin(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, mOnCompleteListener);
+        //mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, mOnCompleteListener);
+    }
+
+    @Override
+    public void onRosefireLogin() {
+
     }
 
     @Override
@@ -339,78 +327,38 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        String currentCourseKey = SharedPreferencesUtils.getCurrentCourseKey(this);
-        int id = item.getItemId();
-        Fragment switchTo = null;
-        String tag = "";
+    public void onAlarmSelected(Alarm selectedAlarm) {
 
-        // TODO: May be useful if I implement return to the chosen fragment after choosing a course.
-        if (id == R.id.nav_sign_out) {
-            Utils.signOut(this);
-            switchTo = new LoginFragment();
-            tag = "login";
-        } else if (id == R.id.nav_courses || currentCourseKey == null) {
-            switchTo = new CourseListFragment();
-            tag = "courses";
-        } else if (id == R.id.nav_assignments) {
-            switchTo = AssignmentListFragment.newInstance(currentCourseKey);
-            tag = "assignments";
-        } else if (id == R.id.nav_students) {
-            switchTo = new StudentListFragment();
-            tag = "students";
-        } else if (id == R.id.nav_owners) {
-            switchTo = new OwnerListFragment();
-            tag = "owners";
-        }
-
-        if (switchTo != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.container, switchTo, tag);
-            ft.commit();
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override
-    public void onAssignmentSelected(Assignment assignment) {
-        // TODO: go to grade entry fragment
+    public void onNoteSelected(Note selectedNote) {
+
     }
 
     @Override
-    public void onCourseSelected(Course selectedCourse) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, AssignmentListFragment.newInstance(selectedCourse.getKey()));
-        ft.addToBackStack("course_fragment");
-        ft.commit();
-    }
+    public void onReminderSelected(Reminder selectedReminder) {
 
-    @Override
-    public void onThisOwnerRemoved() {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, new CourseListFragment());
-        ft.commit();
     }
 
     class OwnerValueEventListener implements ValueEventListener {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+            /*
             String username = (String) dataSnapshot.child(Owner.USERNAME).getValue();
             Log.d(Constants.TAG, "Rose username in LoginActivity: " + username);
             if (username == null) {
                 showUsernameDialog();
             } else {
                 if (mOwnerValueEventListener != null) {
-                    mOwnerRef.removeEventListener(mOwnerValueEventListener);
+                   // mOwnerRef.removeEventListener(mOwnerValueEventListener);
                 }
                 // TODO: check if this is correct
-                String currentUser = SharedPreferencesUtils.getCurrentUser(GradeRecorderActivity.this);
+                String currentUser = SharedPreferencesUtils.getCurrentUser(MainActivity.this);
                 Log.d(Constants.TAG, String.format(Locale.US, "Sharedprefs current user: [%s]\n", currentUser));
                 onLoginComplete(currentUser);
             }
+            */
         }
 
         @Override
@@ -421,6 +369,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @SuppressLint("InflateParams")
     private void showUsernameDialog() {
+        /*
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Rose username");
         View view = getLayoutInflater().inflate(R.layout.dialog_get_rose_username, null);
@@ -439,5 +388,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
         );
         builder.create().show();
+        */
     }
 }

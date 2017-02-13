@@ -5,13 +5,9 @@ package edu.rosehulman.finngw.quicknotes.models;
  */
 
 public class Note extends Card {
-
-    private String title;
-    private String description;
-
     public Note() {}
 
-    public Note(String t, String d) {
-        super(t, d);
+    public Note(String t, String d, String id) {
+        super(t, d, id);
     }
 }

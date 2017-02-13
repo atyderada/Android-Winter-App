@@ -16,9 +16,10 @@ public abstract class Card {
 
     public Card() {}
 
-    public Card(String t, String d) {
+    public Card(String t, String d, String id) {
         title = t;
         description = d;
+        uid = id;
     }
 
     @Exclude

@@ -32,7 +32,7 @@ public class LoginFragment extends Fragment {
     private boolean mLoggingIn;
     private OnLoginListener mOnLoginListener;
     private DatabaseReference mFirebaseRef;
-    private FirebaseAuth mAuth;
+    //private FirebaseAuth mAuth;
 
     public LoginFragment() {
         // Required empty constructor
@@ -42,16 +42,13 @@ public class LoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLoggingIn = false;
-        mAuth = FirebaseAuth.getInstance();
+        //mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
-
-        final FloatingActionButton fab = ((GradeRecorderActivity) getActivity()).getFab();
-        fab.setVisibility(View.GONE);
 
         mEmailView = (EditText) rootView.findViewById(R.id.email);
         mPasswordView = (EditText) rootView.findViewById(R.id.password);

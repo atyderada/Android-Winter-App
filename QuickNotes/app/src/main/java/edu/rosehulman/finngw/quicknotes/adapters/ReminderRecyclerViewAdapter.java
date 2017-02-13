@@ -1,77 +1,170 @@
 package edu.rosehulman.finngw.quicknotes.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import edu.rosehulman.finngw.quicknotes.fragments.ItemFragment.OnListFragmentInteractionListener;
-import edu.rosehulman.finngw.quicknotes.fragments.dummy.DummyContent.DummyItem;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
-import java.util.List;
+import java.util.ArrayList;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
- */
+import edu.rosehulman.finngw.quicknotes.R;
+import edu.rosehulman.finngw.quicknotes.fragments.ReminderListFragment;
+import edu.rosehulman.finngw.quicknotes.models.Note;
+import edu.rosehulman.finngw.quicknotes.models.Reminder;
+import edu.rosehulman.finngw.quicknotes.utilities.Constants;
+import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
+
 public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final ReminderListFragment mReminderListFragment;
 
-    public ReminderRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
-        mListener = listener;
+    private final ReminderListFragment.OnReminderSelectedListener mReminderSelectedListener;
+    private String mUid;
+    private DatabaseReference mRemindersRef;
+    private ArrayList<Reminder> mReminders = new ArrayList<>();
+
+    public ReminderRecyclerViewAdapter(ReminderListFragment reminderListFragment, ReminderListFragment.OnReminderSelectedListener listener) {
+        Log.d(Constants.TAG, "CourseAdapter adding OwnerValueListener");
+
+        mReminderListFragment = reminderListFragment;
+        mReminderSelectedListener = listener;
+
+        mUid = SharedPreferencesUtils.getCurrentUser(reminderListFragment.getContext());
+        Log.d(Constants.TAG, "Current user: " + mUid);
+
+        assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
+
+        mRemindersRef = FirebaseDatabase.getInstance().getReference().child(Constants.NOTES_PATH);
+        // Deep query. Find the courses owned by me
+        Query query = mRemindersRef.orderByChild("owners/" + mUid).equalTo(true);
+        query.addChildEventListener(new RemindersChildEventListener());
+    }
+
+    public void firebasePush(String noteTitle, String noteDescription) {
+        Note note = new Note(noteTitle, noteDescription, mUid);
+        DatabaseReference noteRef = mRemindersRef.push();
+        String noteKey = noteRef.getKey();
+        noteRef.setValue(note);
+    }
+
+    public void firebaseEdit(Note note, String newNoteTitle, String newNoteDescription) {
+        note.setTitle(newNoteTitle);
+        note.setDescription(newNoteDescription);
+        mRemindersRef.child(note.getKey()).setValue(note);
+    }
+
+    public void firebaseRemove(Note noteToRemove) {
+        mRemindersRef.child(noteToRemove.getKey()).removeValue();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_item, parent, false);
-        return new ViewHolder(view);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_row_view, parent, false);
+        return new ReminderRecyclerViewAdapter.ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        holder.mReminderTitleTextView.setText(mReminders.get(position).getTitle());
+        holder.mReminderDescriptionTextView.setText(mReminders.get(position).getDescription());
+        holder.mReminderDateTextView.setText(mReminders.get(position).getDate());
+        holder.mReminderCompletedTextView.setText(mReminders.get(position).getCompleted());
+    }
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+    @Override
+    public int getItemCount() { return mReminders.size(); }
+
+    class RemindersChildEventListener implements ChildEventListener {
+        // While we don't push up deletes, we need to listen for other owners deleting our course.
+
+        private void add(DataSnapshot dataSnapshot) {
+            Reminder reminder = dataSnapshot.getValue(Reminder.class);
+            reminder.setKey(dataSnapshot.getKey());
+            mReminders.add(reminder);
+        }
+
+        private int remove(String key) {
+            for (Reminder reminder : mReminders) {
+                if (reminder.getKey().equals(key)) {
+                    int foundPos = mReminders.indexOf(reminder);
+                    mReminders.remove(reminder);
+                    return foundPos;
                 }
             }
-        });
-    }
+            return -1;
+        }
 
-    @Override
-    public int getItemCount() {
-        return mValues.size();
-    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
-
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.id);
-            mContentView = (TextView) view.findViewById(R.id.content);
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            Log.d(Constants.TAG, "My course: " + dataSnapshot);
+            add(dataSnapshot);
+            notifyDataSetChanged();
         }
 
         @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            remove(dataSnapshot.getKey());
+            add(dataSnapshot);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            int position = remove(dataSnapshot.getKey());
+            if (position >= 0) {
+                notifyItemRemoved(position);
+            }
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            // empty
+        }
+
+        @Override
+        public void onCancelled(DatabaseError firebaseError) {
+            Log.e("TAG", "onCancelled. Error: " + firebaseError.getMessage());
+        }
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        private TextView mReminderTitleTextView;
+        private TextView mReminderDescriptionTextView;
+        private TextView mReminderDateTextView;
+        private TextView mReminderCompletedTextView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            mReminderTitleTextView = (TextView) itemView.findViewById(R.id.title_reminder_text);
+            mReminderDescriptionTextView = (TextView) itemView.findViewById(R.id.description_reminder_text);
+            mReminderDateTextView = (TextView) itemView.findViewById(R.id.date_reminder_text);
+            mReminderCompletedTextView = (TextView) itemView.findViewById(R.id.completed_reminder_text);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            SharedPreferencesUtils.setCurrentCourseKey(mReminderListFragment.getContext(), mReminders.get(getAdapterPosition()).getKey());
+            Reminder reminder = mReminders.get(getAdapterPosition());
+            mReminderSelectedListener.onReminderSelected(reminder);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            Reminder reminder = mReminders.get(getAdapterPosition());
+            //mNoteListFragment.showNoteDialog(course);
+            return true;
         }
     }
 }

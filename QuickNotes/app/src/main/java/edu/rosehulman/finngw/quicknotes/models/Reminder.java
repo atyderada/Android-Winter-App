@@ -5,31 +5,15 @@ package edu.rosehulman.finngw.quicknotes.models;
  */
 
 public class Reminder extends Card {
+
     private String date;
-
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    private boolean completed;
+    private String completed;
 
     public Reminder() {
     }
 
-    public Reminder(String t, String de, int y, int m, int d) {
-        super(t, de);
+    public Reminder(String t, String de, String uid, int y, int m, int d) {
+        super(t, de, uid);
         if(m < 10) {
             date = y + "0" + m;
         } else {
@@ -40,6 +24,22 @@ public class Reminder extends Card {
         } else {
             date = date.concat("" + d);
         }
-        completed = false;
+        completed = "false";
+    }
+
+    public String getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(String completed) {
+        this.completed = completed;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
