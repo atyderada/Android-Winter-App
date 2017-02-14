@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,6 @@ public class NoteListFragment extends Fragment {
         Context context = getContext();
 
         View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
-        Log.d("NNNNNN", "inflated note list");
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.note_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));

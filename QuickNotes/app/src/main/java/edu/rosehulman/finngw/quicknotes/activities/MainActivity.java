@@ -2,7 +2,6 @@ package edu.rosehulman.finngw.quicknotes.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,10 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.DatePicker;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,20 +59,10 @@ public class MainActivity extends AppCompatActivity implements
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
 
-    private boolean onEdit;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle("");
-        setSupportActionBar(mToolbar);
-        mToolbar.setBackgroundColor(Color.WHITE);
-
-        final TextView mTitleTextView = (TextView)findViewById(R.id.title_input);
-        final TextView mDescriptionTextView = (TextView)findViewById(R.id.description_input);
 
         if (savedInstanceState == null) {
             initializeFirebase();
@@ -95,55 +81,7 @@ public class MainActivity extends AppCompatActivity implements
         navigationView.getMenu().getItem(0).setChecked(true);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.container, new NoteListFragment(), "notes");
-        ft.commit();
-
         mFirebase = FirebaseDatabase.getInstance();
-
-        onEdit = false;
-
-        ImageButton mAlarmImgeView = (ImageButton) findViewById(R.id.alarm_button);
-        mAlarmImgeView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.container, new AlarmListFragment(), "alarms");
-                ft.commit();
-                addAlarm(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
-                mTitleTextView.setText("");
-                mDescriptionTextView.setText("");
-                onEdit = false;
-            }
-        });
-
-        ImageButton mReminderImageView = (ImageButton) findViewById(R.id.reminder_button);
-        mReminderImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.container, new ReminderListFragment(), "reminders");
-                ft.commit();
-                addReminder(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
-                mTitleTextView.setText("");
-                mDescriptionTextView.setText("");
-                onEdit = false;
-            }
-        });
-
-        ImageButton mNoteImageView = (ImageButton) findViewById(R.id.note_button);
-        mNoteImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.container, new NoteListFragment(), "notes");
-                ft.commit();
-                addNote(mTitleTextView.getText().toString(), mDescriptionTextView.getText().toString());
-                mTitleTextView.setText("");
-                mDescriptionTextView.setText("");
-                onEdit = false;
-            }
-        });
     }
 
     private void initializeFirebase() {
@@ -167,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     SharedPreferencesUtils.setCurrentUser(MainActivity.this, user.getUid());
                     Log.d(Constants.TAG, "User is authenticated");
-
+                    onLoginComplete(user.getUid());
                 }
             }
         };
@@ -260,13 +198,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void onLoginComplete(String uid) {
-        Log.d(Constants.TAG, "User is authenticated");
-
         SharedPreferencesUtils.setCurrentUser(this, uid);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_main, new BaseFragment());
         ft.commit();
-        Log.d("GEORGE", "going into Base Fragment");
     }
 
     @Override
@@ -343,6 +278,10 @@ public class MainActivity extends AppCompatActivity implements
         }, hour, minute, true);
         mTimePicker.setTitle("Select Alarm Time");
         mTimePicker.show();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, new AlarmListFragment(), "alarms");
+        ft.commit();
     }
 
     public void addNote(String title, String description) {
@@ -352,6 +291,10 @@ public class MainActivity extends AppCompatActivity implements
         Note note = new Note(noteTitle, noteDescription, mAuth.getCurrentUser().getUid());
         DatabaseReference noteRef = mFirebase.getReference(Constants.NOTES_PATH).push();
         noteRef.setValue(note);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, new NoteListFragment(), "notes");
+        ft.commit();
     }
 
     public void addReminder(String title, String description) {
@@ -374,5 +317,9 @@ public class MainActivity extends AppCompatActivity implements
         }, year, month, day);
         mDatePicker.setTitle("Select a Date");
         mDatePicker.show();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, new ReminderListFragment(), "reminders");
+        ft.commit();
     }
 }
