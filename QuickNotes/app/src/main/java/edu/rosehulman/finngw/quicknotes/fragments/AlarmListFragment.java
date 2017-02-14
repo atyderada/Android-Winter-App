@@ -79,15 +79,15 @@ private void showDeleteConfirmationDialog(final Note note) {
         void onAlarmSelected(Alarm selectedAlarm);
     }
 
-    public void showAlarmDialog(Alarm alarm) {
+    public void showAlarmDialog(final Alarm alarm) {
         AlertDialog.Builder builder = new AlertDialog.Builder((MainActivity)getActivity());
         builder.setTitle("Alarm Options");
-        builder.setPositiveButton("Edit", null);
         builder.setNegativeButton("Cancel", null);
         builder.setNeutralButton("Remove", new AlertDialog.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Show editing
+                mAdapter.firebaseRemove(alarm);
             }
         });
         builder.show();

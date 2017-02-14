@@ -30,7 +30,7 @@ public class NoteListFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         Context context = getContext();
-        
+
         View rootView = inflater.inflate(R.layout.fragment_note_list, container, false);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.note_recycler_view);
@@ -79,7 +79,7 @@ public class NoteListFragment extends Fragment {
         void onNoteSelected(Note selectedNote);
     }
 
-    public void showNoteDialog(Note note) {
+    public void showNoteDialog(final Note note) {
         AlertDialog.Builder builder = new AlertDialog.Builder((MainActivity)getActivity());
         builder.setTitle("Note Options");
         builder.setNegativeButton("Cancel", null);
@@ -88,7 +88,7 @@ public class NoteListFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Show editing
-                mCallback.
+                mAdapter.firebaseRemove(note);
             }
         });
         builder.show();

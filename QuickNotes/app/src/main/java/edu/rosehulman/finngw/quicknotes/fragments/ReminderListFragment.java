@@ -57,7 +57,7 @@ private void showDeleteConfirmationDialog(final Note note) {
     builder.create().show();
 }
 */
-    public void showReminderDialog(Reminder reminder) {
+    public void showReminderDialog(final Reminder reminder) {
         AlertDialog.Builder builder = new AlertDialog.Builder((MainActivity)getActivity());
         builder.setTitle("Reminder Options");
         builder.setNegativeButton("Cancel", null);
@@ -66,6 +66,7 @@ private void showDeleteConfirmationDialog(final Note note) {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //Show editing
+                mAdapter.firebaseRemove(reminder);
             }
         });
         builder.show();
