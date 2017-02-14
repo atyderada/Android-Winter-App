@@ -1,10 +1,13 @@
 package edu.rosehulman.finngw.quicknotes.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by deradaam on 1/19/2017.
  */
 
-public class Alarm extends Card {
+public class Alarm extends Card implements Parcelable {
 
     private String time;
     private String snoozeTime;
@@ -25,6 +28,23 @@ public class Alarm extends Card {
         snoozeTime = "" + h + (m + 5);
     }
 
+    protected Alarm(Parcel in) {
+        time = in.readString();
+        snoozeTime = in.readString();
+    }
+
+    public static final Creator<Alarm> CREATOR = new Creator<Alarm>() {
+        @Override
+        public Alarm createFromParcel(Parcel in) {
+            return new Alarm(in);
+        }
+
+        @Override
+        public Alarm[] newArray(int size) {
+            return new Alarm[size];
+        }
+    };
+
     public void setTime(int h, int m) {
         time = "" + h + m;
         snoozeTime = "" + h + (m + 5);
@@ -44,5 +64,16 @@ public class Alarm extends Card {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(time);
+        dest.writeString(snoozeTime);
     }
 }
