@@ -1,7 +1,10 @@
 package edu.rosehulman.finngw.quicknotes.activities;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -54,6 +57,7 @@ import edu.rosehulman.finngw.quicknotes.fragments.ReminderListFragment;
 import edu.rosehulman.finngw.quicknotes.models.Alarm;
 import edu.rosehulman.finngw.quicknotes.models.Note;
 import edu.rosehulman.finngw.quicknotes.models.Reminder;
+import edu.rosehulman.finngw.quicknotes.utilities.AlarmReceiver;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 import edu.rosehulman.finngw.quicknotes.utilities.Utils;
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     private GoogleApiClient mGoogleApiClient;
 
     private boolean onEdit;
+    private String onEditChoice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements
         initializeGoogle();
 
         onEdit = false;
+        onEditChoice = "note";
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -307,6 +313,18 @@ public class MainActivity extends AppCompatActivity implements
             FragmentTransaction ft = fm.beginTransaction();
             fm.popBackStackImmediate();
             ft.commit();
+
+            FragmentTransaction ftt = getSupportFragmentManager().beginTransaction();
+            Fragment fragment = null;
+            if (onEditChoice.equals("note")) {
+                fragment = new NoteListFragment();
+            } else if (onEditChoice.equals("alarm")) {
+                fragment = new AlarmListFragment();
+            } else if (onEditChoice.equals("reminder")) {
+                fragment = new ReminderListFragment();
+            }
+            ftt.replace(R.id.container, fragment);
+            ftt.commit();
         }
     }
 
@@ -319,6 +337,7 @@ public class MainActivity extends AppCompatActivity implements
         slideTransition.setDuration(200);
         fragment.setEnterTransition(slideTransition);
         ft.replace(R.id.content_main, fragment);
+        onEditChoice = "alarm";
         ft.addToBackStack("alarm");
         ft.commit();
     }
@@ -332,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements
         slideTransition.setDuration(200);
         fragment.setEnterTransition(slideTransition);
         ft.replace(R.id.content_main, fragment);
+        onEditChoice = "note";
         ft.addToBackStack("note");
         ft.commit();
     }
@@ -345,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements
         slideTransition.setDuration(200);
         fragment.setEnterTransition(slideTransition);
         ft.replace(R.id.content_main, fragment);
+        onEditChoice = "reminder";
         ft.addToBackStack("reminder");
         ft.commit();
     }
@@ -379,8 +400,14 @@ public class MainActivity extends AppCompatActivity implements
         final String alarmTitle = title;
         final String alarmDescription = description;
 
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarmIntent;
+
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
         // Launch Dialog
-        Calendar mCurrentTime = Calendar.getInstance();
+        final Calendar mCurrentTime = Calendar.getInstance();
         int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = mCurrentTime.get(Calendar.MINUTE);
         TimePickerDialog mTimePicker;
@@ -390,10 +417,15 @@ public class MainActivity extends AppCompatActivity implements
                 Alarm alarm = new Alarm(alarmTitle, alarmDescription, mAuth.getCurrentUser().getUid(), hourOfDay, minute);
                 DatabaseReference alarmRef = mFirebase.getReference(Constants.ALARMS_PATH).push();
                 alarmRef.setValue(alarm);
+                mCurrentTime.setTimeInMillis(System.currentTimeMillis());
+                mCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                mCurrentTime.set(Calendar.MINUTE, minute);
             }
         }, hour, minute, true);
         mTimePicker.setTitle("Select Alarm Time");
         mTimePicker.show();
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, mCurrentTime.getTimeInMillis(), 1000 * 60 * 1440, alarmIntent);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, new AlarmListFragment(), "alarms");
