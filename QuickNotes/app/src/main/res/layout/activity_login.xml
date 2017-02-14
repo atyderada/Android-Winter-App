@@ -72,6 +72,16 @@
             android:background= "@android:color/transparent"
             android:layout_above="@+id/sign_in_agreement"
             android:layout_alignEnd="@+id/email_login_button"
+            android:layout_marginBottom="20dp"
+            />
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/rosefire_sign_in"
+            android:id="@+id/rosefire_login_button"
+            android:background= "@android:color/transparent"
+            android:layout_above="@+id/sign_in_agreement"
+            android:layout_alignEnd="@+id/email_login_button"
             />
 
         <!--<TextView-->

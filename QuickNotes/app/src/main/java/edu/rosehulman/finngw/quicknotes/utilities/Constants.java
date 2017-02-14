@@ -12,6 +12,6 @@ public class Constants {
     public static final String UID_KEY = "UID_KEY";
     public static final String TAG = "GRF";
     public static final String COURSE_KEY = "COURSE_KEY";
-    public static final String ROSEFIRE_REGISTRY_TOKEN = "rose-fire-token";
+    public static final String ROSEFIRE_REGISTRY_TOKEN = "49ba1de2-1f5b-48de-85df-cf7f60427581";
 
 }

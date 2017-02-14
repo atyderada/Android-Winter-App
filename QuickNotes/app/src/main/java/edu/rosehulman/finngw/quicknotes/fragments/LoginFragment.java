@@ -34,6 +34,7 @@ public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
     private View mGoogleLoginButton;
     private View mEmailLoginButton;
+    private View mRosefireLoginButton;
 
     public LoginFragment() {
         // Required empty constructor
@@ -56,6 +57,7 @@ public class LoginFragment extends Fragment {
         mPasswordView = (EditText) rootView.findViewById(R.id.password_edit_text);
         mEmailLoginButton = (ImageButton)rootView.findViewById(R.id.email_login_button);
         mGoogleLoginButton = (ImageButton)rootView.findViewById(R.id.gmail_login_button);
+        mRosefireLoginButton = (ImageButton) rootView.findViewById(R.id.rosefire_login_button);
 
         if (SHOW_EMAIL_PASSWORD) {
             // Feel free to customize defaults here to speed your testing
@@ -66,6 +68,8 @@ public class LoginFragment extends Fragment {
                 @Override
                 public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                     if (id == EditorInfo.IME_ACTION_NEXT) {
+                        mGoogleLoginButton.setVisibility(View.GONE);
+                        mRosefireLoginButton.setVisibility(View.GONE);
                         mPasswordView.requestFocus();
                         return true;
                     }
@@ -94,6 +98,13 @@ public class LoginFragment extends Fragment {
                     loginWithGoogle();
                 }
             });
+            mRosefireLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loginWithRosefire();
+                }
+            });
+
         }
         return rootView;
     }
@@ -107,6 +118,18 @@ public class LoginFragment extends Fragment {
 
         mLoggingIn = true;
         mOnLoginListener.onGoogleLogin();
+        hideKeyboard();
+    }
+
+    private void loginWithRosefire() {
+        if(mLoggingIn) {
+            return;
+        }
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+        mLoggingIn = true;
+
+        mOnLoginListener.onRosefireLogin();
         hideKeyboard();
     }
     public void login() {
@@ -154,6 +177,8 @@ public class LoginFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEmailView.getWindowToken(), 0);
+        mGoogleLoginButton.setVisibility(View.VISIBLE);
+        mRosefireLoginButton.setVisibility(View.VISIBLE);
     }
 
     public void onLoginError(String message) {
@@ -195,6 +220,7 @@ public class LoginFragment extends Fragment {
     public interface OnLoginListener {
         void onLogin(String email, String password);
         void onGoogleLogin();
+        void onRosefireLogin();
     }
 
  }
