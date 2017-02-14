@@ -68,6 +68,8 @@ public class LoginFragment extends Fragment {
                 @Override
                 public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                     if (id == EditorInfo.IME_ACTION_NEXT) {
+                        mGoogleLoginButton.setVisibility(View.GONE);
+                        mRosefireLoginButton.setVisibility(View.GONE);
                         mPasswordView.requestFocus();
                         return true;
                     }
@@ -175,6 +177,8 @@ public class LoginFragment extends Fragment {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEmailView.getWindowToken(), 0);
+        mGoogleLoginButton.setVisibility(View.VISIBLE);
+        mRosefireLoginButton.setVisibility(View.VISIBLE);
     }
 
     public void onLoginError(String message) {
