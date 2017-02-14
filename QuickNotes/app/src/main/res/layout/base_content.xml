@@ -16,30 +16,6 @@
         android:id="@+id/fullscreen_content"
         android:orientation="vertical">
 
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:theme="@style/ToolbarColoredBack"
-                app:popupTheme="@style/AppTheme.PopupOverlay">
-
-                <ImageView
-                    android:id="@+id/logo"
-                    android:paddingTop="5dp"
-                    android:layout_width="200sp"
-                    android:layout_height="30sp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/quicknotes_logo"/>
-
-            </android.support.v7.widget.Toolbar>
-
-        </android.support.design.widget.AppBarLayout>
-
         <android.support.v7.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

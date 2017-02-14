@@ -2,6 +2,7 @@ package edu.rosehulman.finngw.quicknotes.activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -15,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
@@ -52,12 +54,11 @@ public class MainActivity extends AppCompatActivity implements
         AlarmListFragment.OnAlarmSelectedListener,
         ReminderListFragment.OnReminderSelectedListener {
 
-    private Toolbar mToolbar;
-
     private FirebaseDatabase mFirebase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private OnCompleteListener mOnCompleteListener;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,11 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             initializeFirebase();
         }
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
+        mToolbar.setBackgroundColor(Color.WHITE);
 
         mAuth = FirebaseAuth.getInstance();
         initializeListeners();
@@ -102,10 +108,12 @@ public class MainActivity extends AppCompatActivity implements
                     FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.content_main, new LoginFragment(), "login");
                     ft.commit();
+                    mToolbar.setVisibility(View.GONE);
                 } else {
                     SharedPreferencesUtils.setCurrentUser(MainActivity.this, user.getUid());
                     Log.d(Constants.TAG, "User is authenticated");
                     onLoginComplete(user.getUid());
+                    mToolbar.setVisibility(View.VISIBLE);
                 }
             }
         };
@@ -135,9 +143,6 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if(id == R.id.action_logout) {
             Utils.signOut(this);
         }
@@ -202,6 +207,10 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.content_main, new BaseFragment());
         ft.commit();
+
+        FragmentTransaction ftt = getSupportFragmentManager().beginTransaction();
+        ftt.replace(R.id.container, new NoteListFragment(), "notes");
+        ftt.commit();
     }
 
     @Override
@@ -221,17 +230,23 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onAlarmSelected(Alarm selectedAlarm) {
-
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.replace(R.id.content_main, AlarmDetailFragment.getInstance(selectedAlarm));
+//        ft.commit();
     }
 
     @Override
     public void onNoteSelected(Note selectedNote) {
-
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.replace(R.id.content_main, NoteDetailFragment.getInstance(selectedNote));
+//        ft.commit();
     }
 
     @Override
     public void onReminderSelected(Reminder selectedReminder) {
-
+//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//        ft.replace(R.id.content_main, ReminderDetailFragment.getInstance(selectedReminder));
+//        ft.commit();
     }
 
     /*

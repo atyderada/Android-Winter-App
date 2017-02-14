@@ -1,7 +1,6 @@
 package edu.rosehulman.finngw.quicknotes.fragments;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -31,10 +30,6 @@ public class BaseFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.base_content, container, false);
-
-        mToolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        mToolbar.setTitle("");
-        mToolbar.setBackgroundColor(Color.WHITE);
 
         final TextView mTitleTextView = (TextView)rootView.findViewById(R.id.title_input);
         final TextView mDescriptionTextView = (TextView)rootView.findViewById(R.id.description_input);
