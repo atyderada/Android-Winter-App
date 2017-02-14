@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements
         LoginFragment.OnLoginListener,
         NoteListFragment.OnNoteSelectedListener,
         AlarmListFragment.OnAlarmSelectedListener,
-        ReminderListFragment.OnReminderSelectedListener {
+        ReminderListFragment.OnReminderSelectedListener,
+        NoteDetailFragment.OnFlingListener {
 
     private FirebaseDatabase mFirebase;
     private FirebaseAuth mAuth;
@@ -234,23 +238,40 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAlarmSelected(Alarm selectedAlarm) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_main, AlarmDetailFragment.newInstance(selectedAlarm));
+        Fragment fragment = AlarmDetailFragment.newInstance(selectedAlarm);
+        Slide slideTransition = new Slide(Gravity.RIGHT);
+        slideTransition.setDuration(200);
+        fragment.setEnterTransition(slideTransition);
+        ft.replace(R.id.content_main, fragment);
+        ft.addToBackStack("alarm");
         ft.commit();
     }
 
     @Override
     public void onNoteSelected(Note selectedNote) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_main, NoteDetailFragment.newInstance(selectedNote));
+        Fragment fragment = NoteDetailFragment.newInstance(selectedNote);
+        Slide slideTransition = new Slide(Gravity.RIGHT);
+        slideTransition.setDuration(200);
+        fragment.setEnterTransition(slideTransition);
+        ft.replace(R.id.content_main, fragment);
+        ft.addToBackStack("note");
         ft.commit();
     }
 
     @Override
     public void onReminderSelected(Reminder selectedReminder) {
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.content_main, ReminderDetailFragment.newInstance(selectedReminder));
+        Fragment fragment = ReminderDetailFragment.newInstance(selectedReminder);
+        Slide slideTransition = new Slide(Gravity.RIGHT);
+        slideTransition.setDuration(200);
+        fragment.setEnterTransition(slideTransition);
+        ft.replace(R.id.content_main, fragment);
+        ft.addToBackStack("reminder");
         ft.commit();
     }
+
 
     /*
     @SuppressLint("InflateParams")
@@ -338,6 +359,15 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, new ReminderListFragment(), "reminders");
+        ft.commit();
+    }
+
+
+    @Override
+    public void onSwipe() {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        fm.popBackStackImmediate();
         ft.commit();
     }
 }
