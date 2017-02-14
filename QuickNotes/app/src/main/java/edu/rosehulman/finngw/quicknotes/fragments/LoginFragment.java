@@ -88,12 +88,27 @@ public class LoginFragment extends Fragment {
                     login();
                 }
             });
-
-            return rootView;
+            mGoogleLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loginWithGoogle();
+                }
+            });
         }
         return rootView;
     }
 
+    private void loginWithGoogle() {
+        if(mLoggingIn) {
+            return;
+        }
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
+
+        mLoggingIn = true;
+        mOnLoginListener.onGoogleLogin();
+        hideKeyboard();
+    }
     public void login() {
         if (mLoggingIn) {
             return;
@@ -179,6 +194,7 @@ public class LoginFragment extends Fragment {
 
     public interface OnLoginListener {
         void onLogin(String email, String password);
+        void onGoogleLogin();
     }
 
  }
