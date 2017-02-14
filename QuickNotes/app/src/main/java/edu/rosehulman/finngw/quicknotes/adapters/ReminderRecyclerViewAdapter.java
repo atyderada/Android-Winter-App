@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,8 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
         mRemindersRef = FirebaseDatabase.getInstance().getReference(Constants.REMINDERS_PATH);
-        mRemindersRef.addChildEventListener(new RemindersChildEventListener());
+        Query mReminderQuery = mRemindersRef.orderByChild("uid").equalTo(mUid);
+        mReminderQuery.addChildEventListener(new RemindersChildEventListener());
     }
 
     public void firebasePush(String reminderTitle, String reminderDescription, String date, int year, int month, int day) {
@@ -83,7 +85,7 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
         private void add(DataSnapshot dataSnapshot) {
             Reminder reminder = dataSnapshot.getValue(Reminder.class);
             reminder.setKey(dataSnapshot.getKey());
-            mReminders.add(reminder);
+            mReminders.add(0, reminder);
         }
 
         private int remove(String key) {
@@ -96,7 +98,6 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
             }
             return -1;
         }
-
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -149,6 +150,7 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
 
         @Override
         public void onClick(View v) {
+
             SharedPreferencesUtils.setCurrentCourseKey(mReminderListFragment.getContext(), mReminders.get(getAdapterPosition()).getKey());
             Reminder reminder = mReminders.get(getAdapterPosition());
             mReminderSelectedListener.onReminderSelected(reminder);
@@ -157,7 +159,7 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
         @Override
         public boolean onLongClick(View v) {
             Reminder reminder = mReminders.get(getAdapterPosition());
-            //mNoteListFragment.showNoteDialog(course);
+            mReminderListFragment.showReminderDialog(reminder);
             return true;
         }
     }
