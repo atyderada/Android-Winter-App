@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,8 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
         mAlarmsRef = FirebaseDatabase.getInstance().getReference(Constants.ALARMS_PATH);
-        mAlarmsRef.addChildEventListener(new AlarmsChildEventListener());
+        Query mAlarmsQuery = mAlarmsRef.orderByChild("uid").equalTo(mUid);
+        mAlarmsQuery.addChildEventListener(new AlarmRecyclerViewAdapter.AlarmsChildEventListener());
     }
 
     public void firebasePush(String alarmTitle, String alarmDescription, int hour, int minutes) {
@@ -153,7 +155,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         @Override
         public boolean onLongClick(View v) {
             Alarm alarm = mAlarms.get(getAdapterPosition());
-            //mNoteListFragment.showNoteDialog(course);
+            mAlarmListFragment.showAlarmDialog(alarm);
             return true;
         }
     }

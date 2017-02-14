@@ -1,8 +1,10 @@
 package edu.rosehulman.finngw.quicknotes.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import edu.rosehulman.finngw.quicknotes.R;
+import edu.rosehulman.finngw.quicknotes.activities.MainActivity;
 import edu.rosehulman.finngw.quicknotes.adapters.ReminderRecyclerViewAdapter;
 import edu.rosehulman.finngw.quicknotes.models.Reminder;
 
@@ -54,6 +57,19 @@ private void showDeleteConfirmationDialog(final Note note) {
     builder.create().show();
 }
 */
+    public void showReminderDialog(Reminder reminder) {
+        AlertDialog.Builder builder = new AlertDialog.Builder((MainActivity)getActivity());
+        builder.setTitle("Reminder Options");
+        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton("Edit", null);
+        builder.setNeutralButton("Remove", new AlertDialog.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Show editing
+            }
+        });
+        builder.show();
+    }
 
     @Override
     public void onAttach(Context context) {

@@ -47,7 +47,7 @@ public class ReminderDetailFragment extends Fragment {
         EditText descriptionText = (EditText) view.findViewById(R.id.reminder_detail_description);
         titleView.setText(mReminder.getTitle());
         descriptionText.setText(mReminder.getDescription());
-        return inflater.inflate(R.layout.fragment_reminder_detail, container, false);
+        return view;
     }
 
 }

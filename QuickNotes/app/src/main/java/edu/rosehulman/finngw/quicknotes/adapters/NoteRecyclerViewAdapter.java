@@ -12,6 +12,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -40,7 +41,8 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
         assert (!mUid.isEmpty()); // Consider: use if (BuildConfig.DEBUG)
 
         mNotesRef = FirebaseDatabase.getInstance().getReference(Constants.NOTES_PATH);
-        mNotesRef.addChildEventListener(new NotesChildEventListener());
+        Query mNotesQuery = mNotesRef.orderByChild("uid").equalTo(mUid);
+        mNotesQuery.addChildEventListener(new NoteRecyclerViewAdapter.NotesChildEventListener());
     }
 
     public void firebasePush(String noteTitle, String noteDescription) {
@@ -151,7 +153,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
         @Override
         public boolean onLongClick(View v) {
             Note course = mNotes.get(getAdapterPosition());
-            //mNoteListFragment.showNoteDialog(course);
+            mNoteListFragment.showNoteDialog(course);
             return true;
         }
     }

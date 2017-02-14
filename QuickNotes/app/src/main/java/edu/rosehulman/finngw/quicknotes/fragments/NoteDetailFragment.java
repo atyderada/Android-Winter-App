@@ -11,7 +11,6 @@ import android.widget.TextView;
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.models.Note;
 
-
 public class NoteDetailFragment extends Fragment {
 
     private static final String ARG_NOTE = "note";
@@ -47,7 +46,6 @@ public class NoteDetailFragment extends Fragment {
         EditText descriptionText = (EditText) view.findViewById(R.id.note_detail_description);
         titleView.setText(mNote.getTitle());
         descriptionText.setText(mNote.getDescription());
-        return inflater.inflate(R.layout.fragment_note_detail, container, false);
+        return view;
     }
-
 }

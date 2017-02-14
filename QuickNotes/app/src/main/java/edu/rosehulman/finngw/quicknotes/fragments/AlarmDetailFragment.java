@@ -47,6 +47,6 @@ public class AlarmDetailFragment extends Fragment {
         EditText descriptionText = (EditText) view.findViewById(R.id.alarm_detail_description);
         titleView.setText(mAlarm.getTitle());
         descriptionText.setText(mAlarm.getDescription());
-        return inflater.inflate(R.layout.fragment_alarm_detail, container, false);
+        return view;
     }
 }
