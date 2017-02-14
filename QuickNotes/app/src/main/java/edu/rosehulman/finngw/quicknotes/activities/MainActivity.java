@@ -80,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements
     private Toolbar mToolbar;
     private GoogleApiClient mGoogleApiClient;
 
+    private boolean onEdit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements
         mAuth = FirebaseAuth.getInstance();
         initializeListeners();
         initializeGoogle();
+
+        onEdit = false;
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -217,20 +221,41 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
         Fragment switchTo = null;
         String tag = "";
+        Fragment swap = null;
+        String swapTag = "";
 
         if (id == R.id.nav_notes) {
+            if (onEdit) {
+                swap = new BaseFragment();
+                swapTag = "base";
+            }
             switchTo = new NoteListFragment();
             tag = "notes";
         } else if (id == R.id.nav_alarms) {
+            if (onEdit) {
+                swap = new BaseFragment();
+                swapTag = "base";
+            }
             switchTo = new AlarmListFragment();
             tag = "alarms";
         } else if (id == R.id.nav_reminders) {
+            if (onEdit) {
+                swap = new BaseFragment();
+                swapTag = "base";
+            }
             switchTo = new ReminderListFragment();
             tag = "alarms";
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
+        }
+
+        if (swap != null) {
+            onEdit = false;
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.content_main, swap, swapTag);
+            ft.commit();
         }
 
         if (switchTo != null) {
@@ -307,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onAlarmSelected(Alarm selectedAlarm) {
+        onEdit = true;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = AlarmDetailFragment.newInstance(selectedAlarm);
         Slide slideTransition = new Slide(Gravity.RIGHT);
@@ -319,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onNoteSelected(Note selectedNote) {
+        onEdit = true;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = NoteDetailFragment.newInstance(selectedNote);
         Slide slideTransition = new Slide(Gravity.RIGHT);
@@ -331,7 +358,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onReminderSelected(Reminder selectedReminder) {
-
+        onEdit = true;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = ReminderDetailFragment.newInstance(selectedReminder);
         Slide slideTransition = new Slide(Gravity.RIGHT);
