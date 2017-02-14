@@ -83,7 +83,7 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
         private void add(DataSnapshot dataSnapshot) {
             Note note = dataSnapshot.getValue(Note.class);
             note.setKey(dataSnapshot.getKey());
-            mNotes.add(note);
+            mNotes.add(0, note);
         }
 
         private int remove(String key) {

@@ -85,7 +85,7 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
         private void add(DataSnapshot dataSnapshot) {
             Reminder reminder = dataSnapshot.getValue(Reminder.class);
             reminder.setKey(dataSnapshot.getKey());
-            mReminders.add(reminder);
+            mReminders.add(0, reminder);
         }
 
         private int remove(String key) {
@@ -150,6 +150,7 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
 
         @Override
         public void onClick(View v) {
+
             SharedPreferencesUtils.setCurrentCourseKey(mReminderListFragment.getContext(), mReminders.get(getAdapterPosition()).getKey());
             Reminder reminder = mReminders.get(getAdapterPosition());
             mReminderSelectedListener.onReminderSelected(reminder);

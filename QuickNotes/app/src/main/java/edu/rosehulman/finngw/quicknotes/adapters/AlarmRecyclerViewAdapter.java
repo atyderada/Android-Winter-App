@@ -84,7 +84,7 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         private void add(DataSnapshot dataSnapshot) {
             Alarm alarm = dataSnapshot.getValue(Alarm.class);
             alarm.setKey(dataSnapshot.getKey());
-            mAlarms.add(alarm);
+            mAlarms.add(0, alarm);
         }
 
         private int remove(String key) {

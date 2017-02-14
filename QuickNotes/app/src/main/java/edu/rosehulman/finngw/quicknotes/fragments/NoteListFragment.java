@@ -83,7 +83,6 @@ public class NoteListFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder((MainActivity)getActivity());
         builder.setTitle("Note Options");
         builder.setNegativeButton("Cancel", null);
-        builder.setPositiveButton("Edit", null);
         builder.setNeutralButton("Remove", new AlertDialog.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
