@@ -57,6 +57,8 @@ import edu.rosehulman.finngw.quicknotes.models.Reminder;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 import edu.rosehulman.finngw.quicknotes.utilities.Utils;
+import edu.rosehulman.rosefire.Rosefire;
+import edu.rosehulman.rosefire.RosefireResult;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements
         ReminderListFragment.OnReminderSelectedListener, GoogleApiClient.OnConnectionFailedListener {
 
     private static final int RC_GOOGLE_SIGN_IN = 1;
+    private static final int RC_ROSEFIRE_SIGN_IN = 2;
     private FirebaseDatabase mFirebase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -168,7 +171,18 @@ public class MainActivity extends AppCompatActivity implements
             } else {
                 showLoginError("Google Sign In Failed");
             }
+        } else if(requestCode == RC_ROSEFIRE_SIGN_IN) {
+            RosefireResult result = Rosefire.getSignInResultFromIntent(data);
+            if(result.isSuccessful()) {
+                firebaseAuthWithRosefire(result);
+            } else {
+                showLoginError("Rosefire authentication failed");
+            }
         }
+    }
+
+    private void firebaseAuthWithRosefire(RosefireResult result) {
+        mAuth.signInWithCustomToken(result.getToken()).addOnCompleteListener(mOnCompleteListener);
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
@@ -269,6 +283,12 @@ public class MainActivity extends AppCompatActivity implements
     public void onGoogleLogin() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+    }
+
+    @Override
+    public void onRosefireLogin() {
+        Intent signInIntent = Rosefire.getSignInIntent(this, Constants.ROSEFIRE_REGISTRY_TOKEN);
+        startActivityForResult(signInIntent, RC_ROSEFIRE_SIGN_IN);
     }
 
     @Override
