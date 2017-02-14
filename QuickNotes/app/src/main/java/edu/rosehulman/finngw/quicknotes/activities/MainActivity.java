@@ -31,10 +31,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Calendar;
 
 import edu.rosehulman.finngw.quicknotes.R;
+import edu.rosehulman.finngw.quicknotes.fragments.AlarmDetailFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.AlarmListFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.BaseFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.LoginFragment;
+import edu.rosehulman.finngw.quicknotes.fragments.NoteDetailFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.NoteListFragment;
+import edu.rosehulman.finngw.quicknotes.fragments.ReminderDetailFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.ReminderListFragment;
 import edu.rosehulman.finngw.quicknotes.models.Alarm;
 import edu.rosehulman.finngw.quicknotes.models.Note;
@@ -230,23 +233,23 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onAlarmSelected(Alarm selectedAlarm) {
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//        ft.replace(R.id.content_main, AlarmDetailFragment.getInstance(selectedAlarm));
-//        ft.commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_main, AlarmDetailFragment.newInstance(selectedAlarm));
+        ft.commit();
     }
 
     @Override
     public void onNoteSelected(Note selectedNote) {
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//        ft.replace(R.id.content_main, NoteDetailFragment.getInstance(selectedNote));
-//        ft.commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_main, NoteDetailFragment.newInstance(selectedNote));
+        ft.commit();
     }
 
     @Override
     public void onReminderSelected(Reminder selectedReminder) {
-//        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//        ft.replace(R.id.content_main, ReminderDetailFragment.getInstance(selectedReminder));
-//        ft.commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_main, ReminderDetailFragment.newInstance(selectedReminder));
+        ft.commit();
     }
 
     /*
