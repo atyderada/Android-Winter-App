@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = AlarmDetailFragment.newInstance(selectedAlarm, this);
         Slide slideTransition = new Slide(Gravity.RIGHT);
-        slideTransition.setDuration(200);
+        slideTransition.setDuration(100);
         fragment.setEnterTransition(slideTransition);
         ft.replace(R.id.content_main, fragment);
         onEditChoice = "alarm";
@@ -369,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = NoteDetailFragment.newInstance(selectedNote, this);
         Slide slideTransition = new Slide(Gravity.RIGHT);
-        slideTransition.setDuration(200);
+        slideTransition.setDuration(100);
         fragment.setEnterTransition(slideTransition);
         ft.replace(R.id.content_main, fragment);
         onEditChoice = "note";
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = ReminderDetailFragment.newInstance(selectedReminder, this);
         Slide slideTransition = new Slide(Gravity.RIGHT);
-        slideTransition.setDuration(200);
+        slideTransition.setDuration(100);
         fragment.setEnterTransition(slideTransition);
         ft.replace(R.id.content_main, fragment);
         onEditChoice = "reminder";
@@ -413,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements
                 alarm.setTime(hourOfDay, minute);
                 DatabaseReference alarmRef = mFirebase.getReference(Constants.ALARMS_PATH).push();
                 alarmRef.setValue(alarm);
-                setUpPhoneAlar(hourOfDay, minute);
+                setUpPhoneAlarm(hourOfDay, minute);
             }
         }, hour, minute, true);
         mTimePicker.setTitle("Select Alarm Time");
@@ -424,7 +424,7 @@ public class MainActivity extends AppCompatActivity implements
         ft.commit();
     }
 
-    private void setUpPhoneAlar(int hourOfDay, int minute) {
+    private void setUpPhoneAlarm(int hourOfDay, int minute) {
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         PendingIntent alarmIntent;
         Intent intent = new Intent(this, AlarmReceiver.class);
