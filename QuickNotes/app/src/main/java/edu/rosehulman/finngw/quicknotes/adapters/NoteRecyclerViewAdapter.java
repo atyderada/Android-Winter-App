@@ -17,12 +17,13 @@ import com.google.firebase.database.Query;
 import java.util.ArrayList;
 
 import edu.rosehulman.finngw.quicknotes.R;
+import edu.rosehulman.finngw.quicknotes.fragments.NoteDetailFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.NoteListFragment;
 import edu.rosehulman.finngw.quicknotes.models.Note;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 
-public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerViewAdapter.ViewHolder> {
+public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerViewAdapter.ViewHolder> implements NoteDetailFragment.Callback {
 
     private final NoteListFragment mNoteListFragment;
 
@@ -76,6 +77,11 @@ public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerVi
 
     @Override
     public int getItemCount() { return mNotes.size(); }
+
+    @Override
+    public void editText(Note mNote, String s, String s1) {
+        firebaseEdit(mNote, s, s1);
+    }
 
     class NotesChildEventListener implements ChildEventListener {
         // While we don't push up deletes, we need to listen for other owners deleting our course.
