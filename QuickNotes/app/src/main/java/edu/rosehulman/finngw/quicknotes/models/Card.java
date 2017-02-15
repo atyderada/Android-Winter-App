@@ -1,12 +1,14 @@
 package edu.rosehulman.finngw.quicknotes.models;
 
+import android.os.Parcelable;
+
 import com.google.firebase.database.Exclude;
 
 /**
  * Created by deradaam on 1/19/2017.
  */
 
-public abstract class Card {
+public abstract class Card implements Parcelable {
 
     private String key;
     private String uid;

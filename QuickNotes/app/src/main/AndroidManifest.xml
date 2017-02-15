@@ -25,12 +25,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <service
             android:name=".utilities.AlarmService"
             android:enabled="true" />
+
         <receiver
-            android:process=":remote"
-            android:name=".utilities.AlarmReceiver">
-        </receiver>
+            android:name=".utilities.AlarmReceiver"
+            android:process=":remote"></receiver>
+
+        <activity
+            android:name=".activities.StopAlarmActivity"
+            android:label="@string/title_activity_stop_alarm"
+            android:theme="@style/AppTheme"></activity>
     </application>
+
 </manifest>

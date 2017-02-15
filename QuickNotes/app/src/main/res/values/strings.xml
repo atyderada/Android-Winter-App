@@ -34,4 +34,5 @@
     <string name="invalid_email">invali email</string>
     <string name="field_required">field required</string>
     <string name="invalid_password">invalid password</string>
+    <string name="title_activity_stop_alarm">StopAlarmActivity</string>
 </resources>

@@ -390,66 +390,53 @@ public class MainActivity extends AppCompatActivity implements
         ft.commit();
     }
 
-
-    /*
-    @SuppressLint("InflateParams")
-    private void showUsernameDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter Rose username");
-        View view = getLayoutInflater().inflate(R.layout.dialog_get_rose_username, null);
-        builder.setView(view);
-        final EditText roseUsernameEditText = (EditText) view
-                .findViewById(R.id.dialog_get_rose_username);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String roseUsername = roseUsernameEditText.getText().toString();
-                        String uid = SharedPreferencesUtils.getCurrentUser(GradeRecorderActivity.this);
-                        mOwnerRef = FirebaseDatabase.getInstance().getReference().child(Constants.OWNERS_PATH).child(uid);
-                        mOwnerRef.child(Owner.USERNAME).setValue(roseUsername);
-                        onLoginComplete(uid);
-                    }
-                }
-        );
-        builder.create().show();
-    }
-    */
-
     public void addAlarm(String title, String description) {
 
         final String alarmTitle = title;
         final String alarmDescription = description;
-
-        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        PendingIntent alarmIntent;
-
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        final Alarm alarm = new Alarm();
 
         // Launch Dialog
         final Calendar mCurrentTime = Calendar.getInstance();
         int hour = mCurrentTime.get(Calendar.HOUR_OF_DAY);
         int minute = mCurrentTime.get(Calendar.MINUTE);
+
         TimePickerDialog mTimePicker;
         mTimePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                Alarm alarm = new Alarm(alarmTitle, alarmDescription, mAuth.getCurrentUser().getUid(), hourOfDay, minute);
+                // Pushing Alarm to Firebase
+                alarm.setTitle(alarmTitle);
+                alarm.setDescription(alarmDescription);
+                alarm.setUid(mAuth.getCurrentUser().getUid());
+                alarm.setTime(hourOfDay, minute);
                 DatabaseReference alarmRef = mFirebase.getReference(Constants.ALARMS_PATH).push();
                 alarmRef.setValue(alarm);
-                mCurrentTime.setTimeInMillis(System.currentTimeMillis());
-                mCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                mCurrentTime.set(Calendar.MINUTE, minute);
+                setUpPhoneAlar(hourOfDay, minute);
             }
         }, hour, minute, true);
         mTimePicker.setTitle("Select Alarm Time");
         mTimePicker.show();
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, mCurrentTime.getTimeInMillis(), 1000 * 60 * 1440, alarmIntent);
+
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, new AlarmListFragment(), "alarms");
         ft.commit();
+    }
+
+    private void setUpPhoneAlar(int hourOfDay, int minute) {
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarmIntent;
+        Intent intent = new Intent(this, AlarmReceiver.class);
+
+        Calendar mCurrentTime = Calendar.getInstance();
+        mCurrentTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        mCurrentTime.set(Calendar.MINUTE, minute);
+
+        alarmIntent = PendingIntent.getBroadcast(getBaseContext(), 0, intent, 0);
+        Log.d("ANTHONYANTHONY", "Alarm hour: " + mCurrentTime.get(Calendar.HOUR_OF_DAY) + " Alarm minute: " + mCurrentTime.get(Calendar.MINUTE));
+        alarmManager.set(AlarmManager.RTC_WAKEUP, mCurrentTime.getTimeInMillis(), alarmIntent);
     }
 
     public void addNote(String title, String description) {

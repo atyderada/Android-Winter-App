@@ -9,10 +9,13 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import edu.rosehulman.finngw.quicknotes.R;
-import edu.rosehulman.finngw.quicknotes.activities.MainActivity;
+import edu.rosehulman.finngw.quicknotes.activities.StopAlarmActivity;
+import edu.rosehulman.finngw.quicknotes.models.Alarm;
 
 public class AlarmService extends IntentService {
     private NotificationManager alarmNotificationManager;
+
+    private Alarm mAlarm;
 
     public AlarmService() {
         super("AlarmService");
@@ -20,7 +23,7 @@ public class AlarmService extends IntentService {
 
     @Override
     public void onHandleIntent(Intent intent) {
-        sendNotification("Wake Up! Wake Up!");
+        sendNotification("Wake up !!");
     }
 
     private void sendNotification(String msg) {
@@ -29,14 +32,15 @@ public class AlarmService extends IntentService {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+                new Intent(this, StopAlarmActivity.class), 0);
 
         NotificationCompat.Builder alamNotificationBuilder = new NotificationCompat.Builder(
-                this).setContentTitle("Alarm").setSmallIcon(R.drawable.quicknotes_logo)
+                this).setContentTitle("Alarm").setSmallIcon(R.drawable.logo_image)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                 .setContentText(msg);
 
         alamNotificationBuilder.setContentIntent(contentIntent);
+
         alarmNotificationManager.notify(1, alamNotificationBuilder.build());
         Log.d("AlarmService", "Notification sent.");
     }

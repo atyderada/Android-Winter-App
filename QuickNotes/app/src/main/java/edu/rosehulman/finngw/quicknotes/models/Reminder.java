@@ -1,13 +1,12 @@
 package edu.rosehulman.finngw.quicknotes.models;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * Created by deradaam on 1/19/2017.
  */
 
-public class Reminder extends Card implements Parcelable {
+public class Reminder extends Card {
 
     private String date;
     private String completed;
