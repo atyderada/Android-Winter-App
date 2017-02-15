@@ -1,13 +1,12 @@
 package edu.rosehulman.finngw.quicknotes.fragments;
 
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.models.Alarm;
@@ -23,7 +22,8 @@ public class AlarmDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static AlarmDetailFragment newInstance(Alarm alarm) {
+    public static AlarmDetailFragment newInstance(Alarm alarm, Callback callback) {
+        mCallback = callback;
         AlarmDetailFragment fragment = new AlarmDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_ALARM, alarm);
@@ -46,19 +46,33 @@ public class AlarmDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_alarm_detail, container, false);
         final EditText titleView = (EditText) view.findViewById(R.id.alarm_detail_title);
         final EditText descriptionText = (EditText) view.findViewById(R.id.alarm_detail_description);
+        final EditText timeText = (EditText) view.findViewById(R.id.alarm_detail_time);
+
         titleView.setText(mAlarm.getTitle());
         descriptionText.setText(mAlarm.getDescription());
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        String time = "";
+        if (mAlarm.getTime().length() < 4) {
+            time = time + mAlarm.getTime().charAt(0);
+            time += ":";
+            time += mAlarm.getTime().substring(1, 3);
+        } else {
+            time = time + mAlarm.getTime().charAt(0) + "" + mAlarm.getTime().charAt(1);
+            time += ":";
+            time += mAlarm.getTime().substring(2, 4);
+        }
+        timeText.setText(time);
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fabAlarm);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.editText(mAlarm, titleView.getText().toString(), descriptionText.getText().toString());
+                mCallback.editAlarm(mAlarm, titleView.getText().toString(), descriptionText.getText().toString());
             }
         });
         return view;
     }
 
     public interface Callback {
-        public void editText(Alarm mAlarm, String s, String s1);
+        public void editAlarm(Alarm mAlarm, String s, String s1);
     }
 }

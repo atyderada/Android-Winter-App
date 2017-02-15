@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements
         LoginFragment.OnLoginListener,
         NoteListFragment.OnNoteSelectedListener,
         AlarmListFragment.OnAlarmSelectedListener,
-        ReminderListFragment.OnReminderSelectedListener, GoogleApiClient.OnConnectionFailedListener {
+        ReminderListFragment.OnReminderSelectedListener, GoogleApiClient.OnConnectionFailedListener,
+        NoteDetailFragment.Callback, AlarmDetailFragment.Callback, ReminderDetailFragment.Callback{
 
     private static final int RC_GOOGLE_SIGN_IN = 1;
     private static final int RC_ROSEFIRE_SIGN_IN = 2;
@@ -352,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onAlarmSelected(Alarm selectedAlarm) {
         onEdit = true;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = AlarmDetailFragment.newInstance(selectedAlarm);
+        Fragment fragment = AlarmDetailFragment.newInstance(selectedAlarm, this);
         Slide slideTransition = new Slide(Gravity.RIGHT);
         slideTransition.setDuration(200);
         fragment.setEnterTransition(slideTransition);
@@ -366,7 +367,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onNoteSelected(Note selectedNote) {
         onEdit = true;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = NoteDetailFragment.newInstance(selectedNote);
+        Fragment fragment = NoteDetailFragment.newInstance(selectedNote, this);
         Slide slideTransition = new Slide(Gravity.RIGHT);
         slideTransition.setDuration(200);
         fragment.setEnterTransition(slideTransition);
@@ -380,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onReminderSelected(Reminder selectedReminder) {
         onEdit = true;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment fragment = ReminderDetailFragment.newInstance(selectedReminder);
+        Fragment fragment = ReminderDetailFragment.newInstance(selectedReminder, this);
         Slide slideTransition = new Slide(Gravity.RIGHT);
         slideTransition.setDuration(200);
         fragment.setEnterTransition(slideTransition);
@@ -418,8 +419,6 @@ public class MainActivity extends AppCompatActivity implements
         mTimePicker.setTitle("Select Alarm Time");
         mTimePicker.show();
 
-
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, new AlarmListFragment(), "alarms");
         ft.commit();
@@ -450,6 +449,30 @@ public class MainActivity extends AppCompatActivity implements
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.container, new NoteListFragment(), "notes");
         ft.commit();
+    }
+
+    public void editNote(Note note, String newNoteTitle, String newNoteDescription) {
+        note.setTitle(newNoteTitle);
+        note.setDescription(newNoteDescription);
+        DatabaseReference noteRef = mFirebase.getReference(Constants.NOTES_PATH);
+        noteRef.child(note.getKey()).setValue(note);
+        onBackPressed();
+    }
+
+    public void editAlarm(Alarm alarm, String newAlarmTitle, String newAlarmDescription) {
+        alarm.setTitle(newAlarmTitle);
+        alarm.setDescription(newAlarmDescription);
+        DatabaseReference alarmRef = mFirebase.getReference(Constants.ALARMS_PATH);
+        alarmRef.child(alarm.getKey()).setValue(alarm);
+        onBackPressed();
+    }
+
+    public void editReminder(Reminder reminder, String newReminderTitle, String newReminderDescription) {
+        reminder.setTitle(newReminderTitle);
+        reminder.setDescription(newReminderDescription);
+        DatabaseReference reminderRef = mFirebase.getReference(Constants.REMINDERS_PATH);
+        reminderRef.child(reminder.getKey()).setValue(reminder);
+        onBackPressed();
     }
 
     public void addReminder(String title, String description) {

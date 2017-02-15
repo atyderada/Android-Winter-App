@@ -1,13 +1,12 @@
 package edu.rosehulman.finngw.quicknotes.fragments;
 
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.models.Reminder;
@@ -23,7 +22,8 @@ public class ReminderDetailFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ReminderDetailFragment newInstance(Reminder reminder) {
+    public static ReminderDetailFragment newInstance(Reminder reminder, Callback callback) {
+        mCallback = callback;
         ReminderDetailFragment fragment = new ReminderDetailFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_REMINDER, reminder);
@@ -46,19 +46,28 @@ public class ReminderDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_reminder_detail, container, false);
         final EditText titleView = (EditText) view.findViewById(R.id.reminder_detail_title);
         final EditText descriptionText = (EditText) view.findViewById(R.id.reminder_detail_description);
+        final EditText dateText = (EditText) view.findViewById(R.id.reminder_date_description);
+        final EditText completedText = (EditText) view.findViewById(R.id.reminder_completed_description);
+
         titleView.setText(mReminder.getTitle());
         descriptionText.setText(mReminder.getDescription());
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        String date = mReminder.getDate().substring(4,6);
+        date += "/" + mReminder.getDate().substring(6, 8);
+        date += "/" + mReminder.getDate().substring(0, 4);
+        dateText.setText(date);
+        completedText.setText("Completed: " + mReminder.getCompleted());
+
+        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fabReminder);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.editText(mReminder, titleView.getText().toString(), descriptionText.getText().toString());
+                mCallback.editReminder(mReminder, titleView.getText().toString(), descriptionText.getText().toString());
             }
         });
         return view;
     }
 
     public interface Callback {
-        public void editText(Reminder mReminder, String s, String s1);
+        public void editReminder(Reminder mReminder, String s, String s1);
     }
 }

@@ -18,9 +18,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:id="@+id/reminder_detail_title"
-            />
-
+            android:id="@+id/reminder_detail_title" />
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,14 +27,24 @@
             android:layout_marginTop="10dp"
             android:id="@+id/reminder_detail_description"
             android:text="Example Description Text"/>
-
-        <DatePicker
+        <EditText
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/reminder_detail_date" />
-
-
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/reminder_date_description"
+            android:text="Example Date Text"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/reminder_completed_description"
+            android:text="Example Completion Text"/>
     </LinearLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

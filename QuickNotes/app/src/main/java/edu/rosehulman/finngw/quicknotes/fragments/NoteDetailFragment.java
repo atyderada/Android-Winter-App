@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.models.Note;
@@ -52,13 +51,14 @@ public class NoteDetailFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.editText(mNote, titleView.getText().toString(), descriptionText.getText().toString());
+
+                mCallback.editNote(mNote, titleView.getText().toString(), descriptionText.getText().toString());
             }
         });
         return view;
     }
 
     public interface Callback {
-        public void editText(Note mNote, String s, String s1);
+        public void editNote(Note mNote, String s, String s1);
     }
 }

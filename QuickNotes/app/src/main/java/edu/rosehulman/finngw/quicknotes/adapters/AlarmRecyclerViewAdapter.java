@@ -17,13 +17,12 @@ import com.google.firebase.database.Query;
 import java.util.ArrayList;
 
 import edu.rosehulman.finngw.quicknotes.R;
-import edu.rosehulman.finngw.quicknotes.fragments.AlarmDetailFragment;
 import edu.rosehulman.finngw.quicknotes.fragments.AlarmListFragment;
 import edu.rosehulman.finngw.quicknotes.models.Alarm;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 
-public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecyclerViewAdapter.ViewHolder> implements AlarmDetailFragment.Callback {
+public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecyclerViewAdapter.ViewHolder> {
 
     private final AlarmListFragment mAlarmListFragment;
 
@@ -78,11 +77,6 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
     @Override
     public int getItemCount() { return mAlarms.size(); }
-
-    @Override
-    public void editText(Alarm mAlarm, String s, String s1) {
-        firebaseEdit(mAlarm, s, s1);
-    }
 
     class AlarmsChildEventListener implements ChildEventListener {
         // While we don't push up deletes, we need to listen for other owners deleting our course.

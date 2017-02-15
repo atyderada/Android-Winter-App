@@ -28,6 +28,14 @@
             android:layout_marginTop="10dp"
             android:id="@+id/alarm_detail_description"
             android:text="Example Description Text"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/alarm_detail_time"
+            android:text="Example Description Time"/>
 
     </LinearLayout>
     <android.support.design.widget.FloatingActionButton

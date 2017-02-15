@@ -7,18 +7,23 @@
     android:fitsSystemWindows="true"
     tools:context="edu.rosehulman.finngw.quicknotes.activities.StopAlarmActivity">
 
-    <TextView
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
         android:textSize="20sp"
         android:text="Alarm"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:text="Wake up !!"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="Wake up !!"/>
+    </LinearLayout>
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
