@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import edu.rosehulman.finngw.quicknotes.R;
@@ -47,7 +48,7 @@ public class ReminderDetailFragment extends Fragment {
         final EditText titleView = (EditText) view.findViewById(R.id.reminder_detail_title);
         final EditText descriptionText = (EditText) view.findViewById(R.id.reminder_detail_description);
         final EditText dateText = (EditText) view.findViewById(R.id.reminder_date_description);
-        final EditText completedText = (EditText) view.findViewById(R.id.reminder_completed_description);
+        final CheckBox completedBox = (CheckBox) view.findViewById(R.id.reminder_completed_box);
 
         titleView.setText(mReminder.getTitle());
         descriptionText.setText(mReminder.getDescription());
@@ -55,19 +56,23 @@ public class ReminderDetailFragment extends Fragment {
         date += "/" + mReminder.getDate().substring(6, 8);
         date += "/" + mReminder.getDate().substring(0, 4);
         dateText.setText(date);
-        completedText.setText("Completed: " + mReminder.getCompleted());
-
+        if (mReminder.getCompleted().equals("true")) {
+            completedBox.setChecked(true);
+        } else {
+            completedBox.setChecked(false);
+        }
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fabReminder);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.editReminder(mReminder, titleView.getText().toString(), descriptionText.getText().toString());
+                mCallback.editReminder(mReminder, titleView.getText().toString(), descriptionText.getText().toString(),
+                        dateText.getText().toString(), completedBox.isChecked());
             }
         });
         return view;
     }
 
     public interface Callback {
-        public void editReminder(Reminder mReminder, String s, String s1);
+        public void editReminder(Reminder mReminder, String t, String d, String date, boolean b);
     }
 }

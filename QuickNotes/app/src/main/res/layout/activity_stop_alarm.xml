@@ -20,7 +20,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:textSize="16sp"
             android:text="Wake up !!"/>
     </LinearLayout>
@@ -38,7 +37,4 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_stop_alarm" />
-
 </android.support.design.widget.CoordinatorLayout>

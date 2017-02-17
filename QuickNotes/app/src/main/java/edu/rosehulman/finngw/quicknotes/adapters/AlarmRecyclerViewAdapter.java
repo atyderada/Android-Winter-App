@@ -45,19 +45,6 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
         mAlarmsQuery.addChildEventListener(new AlarmRecyclerViewAdapter.AlarmsChildEventListener());
     }
 
-    public void firebasePush(String alarmTitle, String alarmDescription, int hour, int minutes) {
-        Alarm alarm = new Alarm(alarmTitle, alarmDescription, mUid, hour, minutes);
-        DatabaseReference alarmRef = mAlarmsRef.push();
-        String alarmKey = alarmRef.getKey();
-        alarmRef.setValue(alarm);
-    }
-
-    public void firebaseEdit(Alarm alarm, String newAlarmTitle, String newAlarmDescription) {
-        alarm.setTitle(newAlarmTitle);
-        alarm.setDescription(newAlarmDescription);
-        mAlarmsRef.child(alarm.getKey()).setValue(alarm);
-    }
-
     public void firebaseRemove(Alarm alarmToRemove) {
         mAlarmsRef.child(alarmToRemove.getKey()).removeValue();
     }
@@ -70,9 +57,20 @@ public class AlarmRecyclerViewAdapter extends RecyclerView.Adapter<AlarmRecycler
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mAlarmTitleTextView.setText(mAlarms.get(position).getTitle());
-        holder.mAlarmDescriptionTextView.setText(mAlarms.get(position).getDescription());
-        holder.mAlarmTimeTextView.setText(mAlarms.get(position).getTime());
+        Alarm alarm = mAlarms.get(position);
+        holder.mAlarmTitleTextView.setText(alarm.getTitle());
+        holder.mAlarmDescriptionTextView.setText(alarm.getDescription());
+        String time = "";
+        if (alarm.getTime().length() < 4) {
+            time = time + alarm.getTime().charAt(0);
+            time += ":";
+            time += alarm.getTime().substring(1, 3);
+        } else {
+            time = time + alarm.getTime().charAt(0) + "" + alarm.getTime().charAt(1);
+            time += ":";
+            time += alarm.getTime().substring(2, 4);
+        }
+        holder.mAlarmTimeTextView.setText(time);
     }
 
     @Override

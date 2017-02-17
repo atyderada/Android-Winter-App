@@ -1,5 +1,6 @@
 package edu.rosehulman.finngw.quicknotes.adapters;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,10 +71,21 @@ public class ReminderRecyclerViewAdapter extends RecyclerView.Adapter<ReminderRe
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mReminderTitleTextView.setText(mReminders.get(position).getTitle());
-        holder.mReminderDescriptionTextView.setText(mReminders.get(position).getDescription());
-        holder.mReminderDateTextView.setText(mReminders.get(position).getDate());
-        holder.mReminderCompletedTextView.setText(mReminders.get(position).getCompleted());
+        Reminder reminder = mReminders.get(position);
+        holder.mReminderTitleTextView.setText(reminder.getTitle());
+        holder.mReminderDescriptionTextView.setText(reminder.getDescription());
+        Log.d("LLLLLEEEENNGTH", reminder.getDate());
+        String date = reminder.getDate().substring(4,6);
+        date += "/" + reminder.getDate().substring(6, 8);
+        date += "/" + reminder.getDate().substring(0, 4);
+        holder.mReminderDateTextView.setText(date);
+        if (reminder.getCompleted().equals("true")) {
+            holder.mReminderCompletedTextView.setText("Complete");
+            holder.mReminderCompletedTextView.setTextColor(Color.GREEN);
+        } else {
+            holder.mReminderCompletedTextView.setText("Incomplete");
+            holder.mReminderCompletedTextView.setTextColor(Color.RED);
+        }
     }
 
     @Override

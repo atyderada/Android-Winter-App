@@ -10,12 +10,9 @@ import android.util.Log;
 
 import edu.rosehulman.finngw.quicknotes.R;
 import edu.rosehulman.finngw.quicknotes.activities.StopAlarmActivity;
-import edu.rosehulman.finngw.quicknotes.models.Alarm;
 
 public class AlarmService extends IntentService {
     private NotificationManager alarmNotificationManager;
-
-    private Alarm mAlarm;
 
     public AlarmService() {
         super("AlarmService");

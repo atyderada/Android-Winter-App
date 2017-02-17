@@ -59,6 +59,7 @@ import edu.rosehulman.finngw.quicknotes.models.Note;
 import edu.rosehulman.finngw.quicknotes.models.Reminder;
 import edu.rosehulman.finngw.quicknotes.utilities.AlarmReceiver;
 import edu.rosehulman.finngw.quicknotes.utilities.Constants;
+import edu.rosehulman.finngw.quicknotes.utilities.ReminderReceiver;
 import edu.rosehulman.finngw.quicknotes.utilities.SharedPreferencesUtils;
 import edu.rosehulman.finngw.quicknotes.utilities.Utils;
 import edu.rosehulman.rosefire.Rosefire;
@@ -434,7 +435,55 @@ public class MainActivity extends AppCompatActivity implements
         mCurrentTime.set(Calendar.MINUTE, minute);
 
         alarmIntent = PendingIntent.getBroadcast(getBaseContext(), 0, intent, 0);
-        Log.d("ANTHONYANTHONY", "Alarm hour: " + mCurrentTime.get(Calendar.HOUR_OF_DAY) + " Alarm minute: " + mCurrentTime.get(Calendar.MINUTE));
+        alarmManager.set(AlarmManager.RTC_WAKEUP, mCurrentTime.getTimeInMillis(), alarmIntent);
+    }
+
+    public void addReminder(String title, String description) {
+        final String reminderTitle = title;
+        final String reminderDescription = description;
+        final Reminder reminder = new Reminder();
+
+        // launch dialog
+        Calendar mCurrentDate = Calendar.getInstance();
+        int day = mCurrentDate.get(Calendar.DAY_OF_MONTH);
+        int month = mCurrentDate.get(Calendar.MONTH);
+        int year = mCurrentDate.get(Calendar.YEAR);
+
+        DatePickerDialog mDatePicker;
+        mDatePicker = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                reminder.setTitle(reminderTitle);
+                reminder.setDescription(reminderDescription);
+                reminder.setUid(mAuth.getCurrentUser().getUid());
+                reminder.setDate(year, month + 1, dayOfMonth);
+                reminder.setCompleted("false");
+                DatabaseReference reminderRef = mFirebase.getReference(Constants.REMINDERS_PATH).push();
+                reminderRef.setValue(reminder);
+                setUpPhoneReminder(month, dayOfMonth, year);
+            }
+        }, year, month, day);
+        mDatePicker.setTitle("Select a Date");
+        mDatePicker.show();
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.container, new ReminderListFragment(), "alarms");
+        ft.commit();
+    }
+
+    private void setUpPhoneReminder(int m, int d, int y) {
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        PendingIntent alarmIntent;
+        Intent intent = new Intent(this, ReminderReceiver.class);
+
+        Calendar mCurrentTime = Calendar.getInstance();
+        mCurrentTime.set(Calendar.MONTH, m + 1);
+        mCurrentTime.set(Calendar.DAY_OF_MONTH, d);
+        mCurrentTime.set(Calendar.YEAR, y);
+        mCurrentTime.set(Calendar.HOUR_OF_DAY, 21);
+        mCurrentTime.set(Calendar.MINUTE, 37);
+
+        alarmIntent = PendingIntent.getBroadcast(getBaseContext(), 0, intent, 0);
         alarmManager.set(AlarmManager.RTC_WAKEUP, mCurrentTime.getTimeInMillis(), alarmIntent);
     }
 
@@ -459,46 +508,35 @@ public class MainActivity extends AppCompatActivity implements
         onBackPressed();
     }
 
-    public void editAlarm(Alarm alarm, String newAlarmTitle, String newAlarmDescription) {
+    public void editAlarm(Alarm alarm, String newAlarmTitle, String newAlarmDescription, String newAlarmTime) {
         alarm.setTitle(newAlarmTitle);
         alarm.setDescription(newAlarmDescription);
+        String time = "";
+        time += newAlarmTime.substring(0, 2);
+        time += newAlarmTime.substring(3, 5);
+        alarm.setTime(time);
         DatabaseReference alarmRef = mFirebase.getReference(Constants.ALARMS_PATH);
         alarmRef.child(alarm.getKey()).setValue(alarm);
         onBackPressed();
     }
 
-    public void editReminder(Reminder reminder, String newReminderTitle, String newReminderDescription) {
+    public void editReminder(Reminder reminder, String newReminderTitle, String newReminderDescription,
+                             String newReminderDate, boolean newReminderCompleted) {
         reminder.setTitle(newReminderTitle);
         reminder.setDescription(newReminderDescription);
+        String date = "";
+        date += newReminderDate.substring(6, 10);
+        date += newReminderDate.substring(3, 5);
+        date += newReminderDate.substring(0, 2);
+        reminder.setDate(date);
+        if (newReminderCompleted) {
+            reminder.setCompleted("true");
+        } else {
+            reminder.setCompleted("false");
+        }
         DatabaseReference reminderRef = mFirebase.getReference(Constants.REMINDERS_PATH);
         reminderRef.child(reminder.getKey()).setValue(reminder);
         onBackPressed();
-    }
-
-    public void addReminder(String title, String description) {
-        final String reminderTitle = title;
-        final String reminderDescription = description;
-
-        // launch dialog
-        Calendar mCurrentDate = Calendar.getInstance();
-        int day = mCurrentDate.get(Calendar.DAY_OF_MONTH);
-        int month = mCurrentDate.get(Calendar.MONTH);
-        int year = mCurrentDate.get(Calendar.YEAR);
-        DatePickerDialog mDatePicker;
-        mDatePicker = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                Reminder reminder = new Reminder(reminderTitle, reminderDescription, mAuth.getCurrentUser().getUid(), year, month + 1, dayOfMonth);
-                DatabaseReference reminderRef = mFirebase.getReference(Constants.REMINDERS_PATH).push();
-                reminderRef.setValue(reminder);
-            }
-        }, year, month, day);
-        mDatePicker.setTitle("Select a Date");
-        mDatePicker.show();
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.container, new ReminderListFragment(), "reminders");
-        ft.commit();
     }
 
     @Override

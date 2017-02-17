@@ -52,6 +52,7 @@ public class AlarmDetailFragment extends Fragment {
         descriptionText.setText(mAlarm.getDescription());
         String time = "";
         if (mAlarm.getTime().length() < 4) {
+            time = time + "0";
             time = time + mAlarm.getTime().charAt(0);
             time += ":";
             time += mAlarm.getTime().substring(1, 3);
@@ -66,13 +67,13 @@ public class AlarmDetailFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.editAlarm(mAlarm, titleView.getText().toString(), descriptionText.getText().toString());
+                mCallback.editAlarm(mAlarm, titleView.getText().toString(), descriptionText.getText().toString(), timeText.getText().toString());
             }
         });
         return view;
     }
 
     public interface Callback {
-        public void editAlarm(Alarm mAlarm, String s, String s1);
+        public void editAlarm(Alarm mAlarm, String t, String d, String ti);
     }
 }

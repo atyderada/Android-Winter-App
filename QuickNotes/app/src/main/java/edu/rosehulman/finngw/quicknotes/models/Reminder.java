@@ -58,9 +58,21 @@ public class Reminder extends Card {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDate(int y, int m, int d) {
+        this.date = "";
+        if(m < 10) {
+            this.date = y + "0" + m;
+        } else {
+            this.date = y + "" + m;
+        }
+        if(d < 10) {
+            this.date = this.date.concat("0" + d);
+        } else {
+            this.date = this.date.concat("" + d);
+        }
     }
+
+    public void setDate(String date) { this.date = date; }
 
     @Override
     public int describeContents() {
